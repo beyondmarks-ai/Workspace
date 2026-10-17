@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# Local environment files
+.env
+.env.local
+.env.*.local
+
+# Logs and temporary artifacts
+*.log
+tmp/
+
+# Runtime uploads and generated documents
+backend/data/jobs/
+
+# OS and editor metadata
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

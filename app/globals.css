@@ -1,0 +1,139 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@500;600;700;800&display=swap');
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; min-height: 100%; }
+body { background: #000; }
+
+.site-shell {
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.video-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.center-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+}
+
+.title-line,
+.workspace-line {
+  white-space: nowrap;
+  font-family: 'Manrope', Arial, sans-serif;
+  line-height: .88;
+  color: transparent;
+  background: linear-gradient(
+    112deg,
+    #fffdf6 0%,
+    #f7dfb0 24%,
+    #ffffff 46%,
+    #e5ae58 72%,
+    #fff3d6 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  filter: drop-shadow(0 4px 18px rgba(123, 67, 13, .28));
+}
+
+.title-line {
+  font-size: clamp(24px, 3.9vw, 62px);
+  font-weight: 600;
+  letter-spacing: .19em;
+  text-indent: .19em;
+}
+
+.present-line {
+  margin: clamp(22px, 2.7vw, 42px) 0 clamp(20px, 2.1vw, 32px);
+  font-family: 'DM Mono', monospace;
+  font-size: clamp(9px, 1vw, 15px);
+  font-weight: 500;
+  letter-spacing: .62em;
+  text-indent: .62em;
+  line-height: 1;
+  color: #f8e6c1;
+  text-shadow: 0 2px 12px rgba(202, 127, 39, .42);
+}
+
+.workspace-line {
+  font-size: clamp(46px, 9.6vw, 152px);
+  font-weight: 800;
+  letter-spacing: -.065em;
+}
+
+button, input, textarea { font: inherit; }
+
+.create-button {
+  margin-top: clamp(28px, 4vw, 52px);
+  padding: 12px 19px;
+  border: 1px solid rgba(255, 238, 205, .55);
+  border-radius: 999px;
+  color: #fff4dc;
+  background: rgba(20, 12, 4, .28);
+  font: 500 10px 'DM Mono', monospace;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .2s, border-color .2s, transform .2s;
+}
+
+.create-button:hover { background: rgba(229, 174, 88, .15); border-color: #f7dfb0; transform: translateY(-1px); }
+
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(5, 3, 1, .72);
+}
+
+.document-dialog {
+  position: relative;
+  width: min(520px, 100%);
+  padding: 36px;
+  border: 1px solid rgba(247, 223, 176, .28);
+  border-radius: 18px;
+  color: #fffaf0;
+  background: #110d08;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, .55);
+  font-family: 'Manrope', Arial, sans-serif;
+}
+
+.close-button { position: absolute; top: 14px; right: 18px; border: 0; color: #d8c7a8; background: transparent; font-size: 25px; cursor: pointer; }
+.dialog-kicker, .upload-field > span, .prompt-field > span { font: 500 10px 'DM Mono', monospace; letter-spacing: .14em; text-transform: uppercase; color: #c9a96f; }
+.dialog-kicker { margin: 0 0 12px; }
+.document-dialog h1 { margin: 0 0 28px; color: #fffaf0; font-size: clamp(26px, 4vw, 38px); letter-spacing: -.04em; }
+.document-dialog form { display: grid; gap: 18px; }
+.upload-field, .prompt-field { display: grid; gap: 9px; }
+.upload-field input { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
+.upload-field strong { padding: 18px; border: 1px dashed rgba(247, 223, 176, .34); border-radius: 10px; color: #eee2cb; font-size: 13px; font-weight: 500; cursor: pointer; }
+.prompt-field textarea { resize: vertical; padding: 13px; border: 1px solid rgba(247, 223, 176, .2); border-radius: 10px; outline: none; color: #fffaf0; background: #0a0805; font-size: 13px; line-height: 1.5; }
+.prompt-field textarea:focus { border-color: #d9ae67; }
+.submit-button { padding: 14px; border: 0; border-radius: 10px; color: #181006; background: linear-gradient(110deg, #fff3d6, #dba451); font-weight: 700; cursor: pointer; }
+.submit-button:disabled { cursor: wait; opacity: .55; }
+.download-link { padding: 13px; border: 1px solid rgba(247, 223, 176, .35); border-radius: 10px; color: #f7dfb0; text-align: center; font-size: 13px; }
+.form-message { margin: 0; font-size: 12px; }
+.form-message.error { color: #ffaaa0; }
+
+@media (max-width: 600px) {
+  .title-line { letter-spacing: .12em; text-indent: .12em; }
+  .workspace-line { font-size: clamp(42px, 13vw, 72px); }
+  .document-dialog { padding: 30px 22px 24px; }
+}
