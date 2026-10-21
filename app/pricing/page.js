@@ -11,7 +11,10 @@ const plans = [
     period: "1 month",
     description: "Multilingual classes and notes for one focused month.",
     features: [
-      "Classes in 12+ Indian languages",
+      {
+        label: "Classes in 12+ Indian languages",
+        demo: "See how one lesson is adapted across Indian languages with English-mixed notes.",
+      },
       "Multilingual notes mixed with English",
       "Full video lesson library",
       "1 month of class access",
@@ -24,9 +27,18 @@ const plans = [
     description: "Ask the lesson, hear the answer and continue learning.",
     features: [
       "Everything in Classes",
-      "Timestamp Q&A jumps to the exact explanation",
-      "Instructor voice and chat answers",
-      "Up to 100 AI/API credits every day",
+      {
+        label: "Timestamp Q&A jumps to the exact explanation",
+        demo: "Ask “How do APIs work?” and the lesson jumps directly to the API explanation.",
+      },
+      {
+        label: "Instructor voice and chat answers",
+        demo: "Hear the answer in your instructor’s voice while the same explanation appears in chat.",
+      },
+      {
+        label: "Up to 100 AI/API credits every day",
+        demo: "Use daily credits with supported text, voice, image and video AI models.",
+      },
     ],
     featured: true,
   },
@@ -38,8 +50,14 @@ const plans = [
     features: [
       "Everything in Interactive",
       "6 months of classes and notes",
-      "2,000 AI/API credits every week",
-      "ChatGPT, Sarvam voice, Veo video and more",
+      {
+        label: "2,000 AI/API credits every week",
+        demo: "Build and experiment through the Beyond API with a fresh weekly credit allowance.",
+      },
+      {
+        label: "Current and newly updated AI models",
+        demo: "Includes supported ChatGPT models, Sarvam voice, Veo video and more.",
+      },
     ],
   },
 ];
@@ -69,7 +87,16 @@ export default function Pricing() {
               <p className="plan-price"><sup>₹</sup>{plan.price}<small>/ {plan.period}</small></p>
               <p className="plan-description">{plan.description}</p>
               <ul>
-                {plan.features.map(feature => <li key={feature}>{feature}</li>)}
+                {plan.features.map(feature => (
+                  <li key={typeof feature === "string" ? feature : feature.label}>
+                    {typeof feature === "string" ? feature : (
+                      <details className="feature-demo">
+                        <summary>{feature.label}<span>Demo</span></summary>
+                        <p>{feature.demo}</p>
+                      </details>
+                    )}
+                  </li>
+                ))}
               </ul>
               <Link className="plan-cta" href="/">Choose {plan.name}</Link>
             </div>
