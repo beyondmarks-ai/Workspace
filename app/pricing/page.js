@@ -38,7 +38,7 @@ const plans = [
     features: [
       "Everything in Interactive",
       "6 months of classes and notes",
-      "1,000 AI/API credits every week",
+      "2,000 AI/API credits every week",
       "ChatGPT, Sarvam voice, Veo video and more",
     ],
   },
