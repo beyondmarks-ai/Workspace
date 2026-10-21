@@ -1,5 +1,6 @@
 "use client";
 
+import Link from 'next/link';
 import { useState } from 'react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://beyondmarks-api.graydune-73875eb0.centralindia.azurecontainerapps.io';
@@ -44,9 +45,20 @@ export default function Home() {
         <div className="title-line">BEYOND MARKS</div>
         <div className="present-line">PRESENTS</div>
         <div className="workspace-line">WORKSPACE</div>
-        <button className="create-button" type="button" onClick={() => setOpen(true)}>
-          Create a document
-        </button>
+        <div className="hero-actions">
+          <button className="hero-button join-button" type="button" onClick={() => setOpen(true)}>
+            <span className="button-label">Join</span>
+            <svg aria-hidden="true" viewBox="0 0 16 16">
+              <path d="M2 14 14 2M6 2h8v8" />
+            </svg>
+          </button>
+          <Link className="hero-button pricing-button" href="/pricing">
+            <span className="button-label">Pricing</span>
+            <svg aria-hidden="true" viewBox="0 0 16 16">
+              <path d="M2 14 14 2M6 2h8v8" />
+            </svg>
+          </Link>
+        </div>
       </div>
 
       {open && (
