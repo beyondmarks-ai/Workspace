@@ -6,23 +6,41 @@ export const metadata = {
 
 const plans = [
   {
-    name: "Starter",
-    price: "0",
-    description: "For trying the workspace and shipping your first ideas.",
-    features: ["3 documents each month", "PDF and DOCX exports", "Standard processing"],
+    name: "Classes",
+    price: "2,000",
+    period: "1 month",
+    description: "Multilingual classes and notes for one focused month.",
+    features: [
+      "Classes in 12+ Indian languages",
+      "Multilingual notes mixed with English",
+      "Full video lesson library",
+      "1 month of class access",
+    ],
   },
   {
-    name: "Pro",
-    price: "29",
-    description: "For creators building polished work every week.",
-    features: ["100 documents each month", "All reference formats", "Priority processing"],
+    name: "Interactive",
+    price: "4,500",
+    period: "3 months",
+    description: "Ask the lesson, hear the answer and continue learning.",
+    features: [
+      "Everything in Classes",
+      "Timestamp Q&A jumps to the exact explanation",
+      "Instructor voice and chat answers",
+      "Up to 100 AI/API credits every day",
+    ],
     featured: true,
   },
   {
-    name: "Studio",
-    price: "99",
-    description: "For teams producing at scale with shared standards.",
-    features: ["Unlimited documents", "Shared team workspace", "Priority support"],
+    name: "All Access",
+    price: "6,000",
+    period: "6 months",
+    description: "The complete learning and AI toolkit for six months.",
+    features: [
+      "Everything in Interactive",
+      "6 months of classes and notes",
+      "1,000 AI/API credits every week",
+      "ChatGPT, Sarvam voice, Veo video and more",
+    ],
   },
 ];
 
@@ -48,7 +66,7 @@ export default function Pricing() {
                 <h2>{plan.name}</h2>
                 {plan.featured && <span>Most popular</span>}
               </div>
-              <p className="plan-price"><sup>$</sup>{plan.price}<small>/ month</small></p>
+              <p className="plan-price"><sup>₹</sup>{plan.price}<small>/ {plan.period}</small></p>
               <p className="plan-description">{plan.description}</p>
               <ul>
                 {plan.features.map(feature => <li key={feature}>{feature}</li>)}
