@@ -401,43 +401,22 @@ button, input, textarea { font: inherit; }
 
 .feature-demo {
   position: relative;
+  display: inline-block;
+  max-width: 100%;
   min-width: 0;
-}
-
-.feature-demo[open] { z-index: 5; }
-
-.feature-demo summary {
-  width: fit-content;
-  display: inline-flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px;
-  list-style: none;
-  cursor: pointer;
+  cursor: help;
   text-decoration: underline dashed rgba(255, 150, 86, .8);
   text-underline-offset: 4px;
 }
 
-.feature-demo summary::-webkit-details-marker { display: none; }
-
-.feature-demo summary span {
-  padding: 3px 5px;
-  border: 1px solid rgba(255, 150, 86, .45);
-  border-radius: 999px;
-  color: #ffb17c;
-  font: 600 7px 'DM Mono', monospace;
-  letter-spacing: .08em;
-  text-decoration: none;
-  text-transform: uppercase;
-}
-
-.feature-demo summary:focus-visible {
+.feature-demo:focus-visible {
   border-radius: 4px;
   outline: 2px solid #ffb17c;
   outline-offset: 3px;
 }
 
-.feature-demo p {
+.feature-demo::after {
+  content: attr(data-demo);
   position: absolute;
   left: -15px;
   bottom: calc(100% + 10px);
@@ -452,6 +431,21 @@ button, input, textarea { font: inherit; }
   box-shadow: 0 14px 34px rgba(0, 0, 0, .45);
   font-size: 10px;
   line-height: 1.55;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(6px);
+  transition: opacity .18s ease, transform .18s ease, visibility .18s ease;
+}
+
+.feature-demo:hover,
+.feature-demo:focus { z-index: 5; }
+
+.feature-demo:hover::after,
+.feature-demo:focus::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
 }
 
 .plan-cta {

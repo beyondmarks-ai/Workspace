@@ -90,10 +90,14 @@ export default function Pricing() {
                 {plan.features.map(feature => (
                   <li key={typeof feature === "string" ? feature : feature.label}>
                     {typeof feature === "string" ? feature : (
-                      <details className="feature-demo">
-                        <summary>{feature.label}<span>Demo</span></summary>
-                        <p>{feature.demo}</p>
-                      </details>
+                      <span
+                        className="feature-demo"
+                        data-demo={feature.demo}
+                        aria-label={`${feature.label}. ${feature.demo}`}
+                        tabIndex="0"
+                      >
+                        {feature.label}
+                      </span>
                     )}
                   </li>
                 ))}
