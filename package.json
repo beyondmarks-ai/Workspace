@@ -6,11 +6,18 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "classes": "node backend/src/class-server.js",
+    "voice": "node backend/src/voice-server.js",
+    "test:voice": "node --test backend/test/voice.test.js",
+    "admin": "next dev -H 127.0.0.1 -p 3002",
+    "test:classes": "node --test backend/test/classes.test.js",
+    "test:dashboard": "node --test backend/test/dashboard.test.js backend/test/orby-introduction.test.js",
     "lint": "next lint"
   },
   "dependencies": {
     "next": "14.2.15",
     "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "react-dom": "18.3.1",
+    "ws": "^8.22.0"
   }
 }

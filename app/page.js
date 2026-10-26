@@ -46,6 +46,7 @@ export default function Home() {
         <div className="present-line">PRESENTS</div>
         <div className="workspace-line">WORKSPACE</div>
         <div className="hero-actions">
+          <Link className="hero-button pricing-button" href="/admin"><span className="button-label">Class admin</span></Link>
           <button className="hero-button join-button" type="button" onClick={() => setOpen(true)}>
             <span className="button-label">Join</span>
             <svg aria-hidden="true" viewBox="0 0 16 16">

@@ -1,0 +1,18 @@
+﻿.welcome-identity-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.welcome-identity-top h1 { margin-bottom: 0; }
+.welcome-identity .model-meta { margin-top: 5px; }
+.orby-introduce { display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex-shrink: 0; min-height: 26px; padding: 4px 8px; border: 1px solid #655a70; border-radius: 7px; background: linear-gradient(120deg, #32263f, #211c27); color: #eee0ff; font: 11px/16px Arial, sans-serif; cursor: pointer; }
+.orby-introduce svg { width: 13px; height: 13px; }
+.orby-introduce:hover { background: #43314f; border-color: #b6a3d1; }
+.orby-orb { position: fixed; z-index: 20; bottom: max(20px, env(safe-area-inset-bottom)); left: 50%; display: grid; place-items: center; width: 208px; height: 208px; margin: 0; padding: 0; border: 0; border-radius: 50%; background: transparent; box-shadow: none; cursor: pointer; transform: translateX(-50%); animation: orby-rise 650ms cubic-bezier(.2,.85,.2,1) both; -webkit-tap-highlight-color: transparent; }
+.orby-orb canvas { max-width: 100%; }
+.orby-orb:focus { outline: none; }
+.orby-orb:focus-visible canvas, .orby-orb:focus-visible .orby-fallback { filter: brightness(1.2); }
+.orby-listening { filter: drop-shadow(0 0 12px #82ead580); }
+.orby-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.orby-error { position: fixed; z-index: 21; bottom: max(12px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: max-content; max-width: min(440px, calc(100vw - 32px)); margin: 0; padding: 10px 14px; border-radius: 10px; background: #211c27; color: #fff0e9; font: 13px/1.5 Arial, sans-serif; text-align: center; }
+.orby-fallback { display: block; width: 170px; height: 170px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff0c8, #dca1cd 25%, #8064b6 55%, #302b54 78%); box-shadow: inset -10px -15px 25px #120b3066, 0 0 36px #c68cf633; }
+@keyframes orby-rise { from { opacity: 0; transform: translate(-50%, calc(100% + 48px)) scale(.88); } to { opacity: 1; transform: translate(-50%, 0) scale(1); } }
+@media (prefers-reduced-motion: reduce) { .orby-orb { animation: none; } }
+@media (max-width: 620px), (pointer: coarse) { .orby-introduce { min-height: 44px; } .welcome-identity-top { align-items: flex-start; } }
+@media (max-height: 600px) { .orby-orb { width: 130px; height: 130px; } .orby-orb canvas { width: 130px !important; height: 130px !important; } }

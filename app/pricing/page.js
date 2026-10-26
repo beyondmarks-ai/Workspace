@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PricingBackdrop from "../components/PricingBackdrop";
 
 export const metadata = {
   title: "Pricing — Flowcus",
@@ -65,13 +66,7 @@ const plans = [
 export default function Pricing() {
   return (
     <main className="pricing-page">
-      <div className="pricing-scenery" aria-hidden="true" />
-      <div className="pricing-ornaments" aria-hidden="true">
-        <span className="ornament-top-left" />
-        <span className="ornament-top-right" />
-        <span className="ornament-bottom-left" />
-        <span className="ornament-bottom-right" />
-      </div>
+      <PricingBackdrop />
       <header className="pricing-heading">
         <p>Flowcus pricing</p>
         <h1>Choose your flow.</h1>
@@ -102,7 +97,8 @@ export default function Pricing() {
                   </li>
                 ))}
               </ul>
-              <Link className="plan-cta" href="/">Choose {plan.name}</Link>
+              <Link className="plan-cta" href={`/dashboard?plan=${plan.name.toLowerCase().replaceAll(" ", "-")}`}>Choose {plan.name}</Link>
+              <Link className="plan-preview" href={`/dashboard?plan=${plan.name.toLowerCase().replaceAll(" ", "-")}`}>Preview your dashboard ↗</Link>
             </div>
           </article>
         ))}

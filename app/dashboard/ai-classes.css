@@ -1,0 +1,29 @@
+.ai-library { position: relative; z-index: 1; width: min(1140px, 100%); padding: 12px 0 56px; color: #232025; }
+.ai-library-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 25px; }
+.ai-library-heading h2 { margin: 0 0 8px; font: 700 clamp(23px, 2.3vw, 30px)/1.25 'Manrope', sans-serif; letter-spacing: -1px; }
+.ai-library-heading > div > span { color: #79716c; font: 13px/1.5 Arial, sans-serif; }
+.ai-carousel-nav { display: flex; align-items: center; flex-shrink: 0; gap: 9px; padding-bottom: 2px; }
+.ai-carousel-nav > span { margin-right: 8px; color: #7c746d; font: 11px 'DM Mono', monospace; }
+.ai-carousel-nav button { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid #d8cfc3; border-radius: 50%; background: #ffffff80; color: #343035; cursor: pointer; }
+.ai-carousel-nav button svg { width: 19px; height: 19px; }
+.ai-carousel-nav button:hover:not(:disabled) { background: #26222a; border-color: #26222a; color: #fff; }
+.ai-carousel-nav button:disabled { opacity: .32; cursor: default; }
+.ai-lesson-grid { display: flex; gap: 22px; overflow-x: auto; overscroll-behavior-x: contain; padding: 4px 4px 20px; margin: -4px; scrollbar-width: thin; scrollbar-color: #c3b6a7 transparent; cursor: grab; user-select: none; }
+.ai-lesson-grid:focus-visible { outline: 2px solid #897497; outline-offset: 5px; border-radius: 15px; }
+.ai-lesson-grid[data-dragging], .ai-lesson-grid[data-dragging] * { cursor: grabbing; }
+.ai-lesson-card { flex: 0 0 348px; min-width: 0; color: #262128; }
+.ai-lesson-cover { position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; padding: 19px; border: 1px solid #ffffff18; border-radius: 14px; background: radial-gradient(ellipse at 100% 60%, color-mix(in srgb, var(--lesson-color) 38%, #17131d), transparent 75%), #17131d; color: var(--lesson-color); text-align: left; cursor: pointer; box-shadow: 0 2px 3px #2520200c; }
+.ai-cover-title { position: absolute; z-index: 2; left: 24px; top: 50%; transform: translateY(-50%); max-width: calc(100% - 48px); white-space: pre-line; color: #f7f4fb; font: 800 25px/1.16 'Manrope', sans-serif; letter-spacing: -1px; text-shadow: 0 2px 12px #17131dbb; }
+.ai-duration { position: absolute; z-index: 3; right: 9px; bottom: 9px; padding: 3px 5px; border-radius: 4px; background: #080808e8; color: #fff; font: 600 11px/1.15 Arial, sans-serif; letter-spacing: .2px; }
+.ai-video-details { min-width: 0; padding: 12px 2px 0; }
+.ai-video-details h3 { margin: 0 0 5px; font: 700 15px/21px 'Manrope', sans-serif; letter-spacing: -.35px; }
+.ai-video-details h3 button { padding: 0; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.ai-video-details h3 button:hover { color: #725888; }
+.ai-library button:focus-visible { outline: 2px solid #897497; outline-offset: 3px; }
+.ai-library-footer { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-top: 13px; }
+.ai-drag-hint { display: flex; align-items: center; flex-shrink: 0; gap: 7px; margin: 0 0 0 auto; color: #8b8177; font: 10px/18px Arial, sans-serif; }
+.ai-drag-hint span { font-size: 16px; }
+.ai-lesson-dialog { width: min(620px, calc(100% - 32px)); }
+.ai-lesson-dialog video { display: block; width: min(100%, 440px); aspect-ratio: 1; max-height: 55svh; margin: auto; border-radius: 12px; background: #111014; }
+@media (max-width: 700px) { .ai-lesson-grid { gap: 16px; } .ai-lesson-card { flex-basis: min(326px, 84vw); } .ai-library-heading { align-items: flex-start; flex-direction: column; gap: 18px; } .ai-carousel-nav { align-self: flex-end; } .ai-cover-title { font-size: 23px; } .ai-library-footer { flex-wrap: wrap; } }
+@media (pointer: coarse) { .ai-carousel-nav button { min-height: 44px; min-width: 44px; } }

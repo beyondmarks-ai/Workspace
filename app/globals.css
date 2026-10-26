@@ -474,6 +474,10 @@ button, input, textarea { font: inherit; }
 }
 .plan-cta:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 
+.plan-preview { text-align: center; margin-top: 8px; min-height: 44px; display: grid; place-items: center; color: #ffdcc0; font-size: 10px; text-decoration: none; }
+.plan-preview:hover { color: #fff; text-decoration: underline; }
+.plan-preview:focus-visible { outline: 2px solid #fff; outline-offset: 2px; border-radius: 4px; }
+
 @keyframes glow-flow-bottom {
   0% { transform: translate3d(-12%, 7%, 0) scale(.92); }
   50% { transform: translate3d(10%, -5%, 0) scale(1.08); }
