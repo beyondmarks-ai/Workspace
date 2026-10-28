@@ -1,4 +1,6 @@
-﻿.model-header-page { justify-content: flex-start; padding: 16px 32px; }
+html:has(.model-header-page) { scrollbar-width: none; }
+html:has(.model-header-page)::-webkit-scrollbar { display: none; }
+.model-header-page { justify-content: flex-start; padding: 16px 32px; }
 .model-header { position: relative; z-index: 1; width: min(682px, 100%); }
 .model-card { display: grid; grid-template-columns: 225px minmax(0, 1fr); gap: 15px; width: 100%; min-height: 256px; padding: 14px; border: 1px solid #1b1b1b; border-radius: 23px; background: #090909; color: #f6f6f6; box-shadow: 0 4px 5px #0000000a; font: 12px/1.4 Arial, Helvetica, sans-serif; }
 .profile-picture { position: relative; display: flex; align-items: center; justify-content: center; width: 225px; min-height: 225px; padding: 0; overflow: hidden; border: 1px solid #3d3945; border-radius: 15px; background: radial-gradient(ellipse at 50% 30%, #393345, #19171f 75%); color: #d6cbe7; cursor: pointer; }

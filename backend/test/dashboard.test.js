@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { getDashboardPlanName, getPreviewPlan, lessons } from '../../app/dashboard/preview-data.mjs';
 import { aiLessons } from '../../app/dashboard/ai-lessons.mjs';
+import { course, teachingFormat } from '../../app/dashboard/system-design.mjs';
 import { readFile } from 'node:fs/promises';
 import { createDragScroll } from '../../app/dashboard/drag-scroll.mjs';
 
@@ -98,4 +99,26 @@ test('pricing previews keep plan-specific course features and reject unknown pla
   assert.equal(getPreviewPlan('__proto__').name, 'Interactive');
   assert.equal(getPreviewPlan(undefined).name, 'Interactive');
   assert.equal(new Set(lessons.map(lesson => lesson.id)).size, lessons.length);
+});
+
+test('system design index preserves twelve sessions and all 120 globally numbered classes', () => {
+  assert.equal(course.sessions.length, 12);
+  assert.equal(new Set(course.sessions.map(session => session.id)).size, 12);
+  const classes = course.sessions.flatMap((session, index) => {
+    assert.equal(session.number, index + 1);
+    assert.equal(session.lessons.length, 10);
+    assert.ok(session.title && session.companies.length >= 2);
+    assert.equal(session.lessons[0].number, index * 10 + 1);
+    assert.equal(session.lessons.at(-1).number, (index + 1) * 10);
+    return session.lessons;
+  });
+  assert.deepEqual(classes.map(lesson => lesson.number), Array.from({ length: 120 }, (_, index) => index + 1));
+  assert.equal(new Set(classes.map(lesson => lesson.id)).size, 120);
+  assert.equal(new Set(classes.map(lesson => lesson.title)).size, 120);
+  assert.equal(classes[0].title, 'What happens when you enter a URL?');
+  assert.equal(classes.at(-1).title, 'Capstone: architect an AI education platform');
+  assert.deepEqual(course.lessonMinutes, [8, 12]);
+  assert.equal(teachingFormat.length, 8);
+  assert.equal(new Set(teachingFormat).size, 8);
+  assert.ok(classes.every(lesson => !lesson.video && !lesson.duration), 'Planned classes must not claim recordings or measured durations');
 });

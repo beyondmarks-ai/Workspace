@@ -4,20 +4,20 @@
 
 Workspace brings the student dashboard and local class administration tools of **Beyond Marks AI Academy** into one Next.js application. Students can explore lesson previews and speak with Orby, while the local admin coordinates recording uploads, translation, and delivery to the study classroom.
 
-> **Project status:** Active development. The student experience is a design preview with working demo playback and a connected local voice assistant. Payment, authentication, verified enrollment, and production course progress are not integrated yet.
+> **Project status:** Active development. The student experience is a design preview with a structured course curriculum and a connected local voice assistant. Payment, authentication, verified enrollment, and production course progress are not integrated yet.
 
 ## Features
 
 ### Student dashboard
 
 - Compact welcome card with an editable name, profile photo, preferred language, and selected plan.
-- Ten playable AI lesson demos in a horizontal carousel, with mouse dragging, touch swiping, keyboard scrolling, and previous/next navigation.
-- Minimal lesson cards with a 16:9 thumbnail, accurate duration, and numbered title.
+- System Design Masterclass: 12 session cards in one horizontally draggable and swipeable row, with hidden scrollbar, soft edge fades, previous/next navigation, and a centered Show all grid toggle. The sessions contain 120 globally numbered micro lessons with the supplied company examples. Open a session to browse its ten classes in the same sideways slider, with arrows, dragging, hidden scrollbar, and Show all. All sessions returns to the session browser; navigation starts in slider mode.
+- Responsive session and class grids, with planned 8-12 minute lessons and an eight-part teaching outline available for every class. Page scrolling remains available while the side scrollbar is hidden.
 - A collection of 120 original learning quotes, rotating every five hours.
 - Browser-local profile, notes, question drafts, and Orby introduction status.
 - Shared pricing-page corner artwork, responsive layouts, and reduced-motion support.
 
-The included videos are **18-second silent demos**, not full course recordings. Pricing links select a dashboard preview; they do not verify a purchase or grant course access.
+The System Design classes are **curriculum previews with recordings coming soon**, not playable recordings. The estimated teaching duration is 16-24 hours. Company names identify teaching examples, not partnerships or endorsements. Pricing links select a dashboard preview; they do not verify a purchase or grant course access. The earlier ten 18-second AI demo videos remain in `public/ai-demos/` but are not assigned to these classes.
 
 ### Orby voice assistant
 
@@ -68,7 +68,7 @@ npm ci
 npm run admin
 ```
 
-Open [the student dashboard](http://127.0.0.1:3002/dashboard?plan=classes) or [pricing](http://127.0.0.1:3002/pricing). Demo playback and the dashboard design work without the companion projects. Orby requires its voice service; class processing requires the full local setup below.
+Open [the student dashboard](http://127.0.0.1:3002/dashboard?plan=classes) or [pricing](http://127.0.0.1:3002/pricing). The curriculum, class outlines, and dashboard design work without the companion projects. Orby requires its voice service; class processing requires the full local setup below.
 
 ### Full local class workspace
 
@@ -139,7 +139,7 @@ Run these commands from the repository root unless noted otherwise.
 | `npm start -- -H 127.0.0.1 -p 3002` | Serve a completed frontend build on the local integration port |
 | `npm run classes` | Start the class worker; requires the companion pipeline modules |
 | `npm run voice` | Start the local Orby voice service |
-| `npm run test:dashboard` | Check lesson data, carousel interactions, plans, quotes, and introduction completion |
+| `npm run test:dashboard` | Check curriculum integrity, retained demo data, plans, quotes, and introduction completion |
 | `npm run test:voice` | Check language routing, streaming, microphone processing, cancellation, and request boundaries with mocked providers |
 | `npm run test:classes` | Check local uploads and request validation; requires the companion pipeline modules |
 | `npm test --prefix backend` | Run all backend tests; requires backend dependencies and companion pipeline modules |
@@ -153,7 +153,7 @@ Before merging frontend changes, run the relevant tests and `npm run build`. Sto
 | --- | --- |
 | `app/admin/` | Local class administration |
 | `app/components/` | Shared page components |
-| `app/dashboard/` | Student interface, lesson data, and Orby |
+| `app/dashboard/` | Student interface, session curriculum (`system-design.mjs`), and Orby |
 | `app/dashboard/orbkit/` | Vendored orb runtime and shader notices |
 | `app/pricing/` | Plan presentation and dashboard previews |
 | `backend/src/` | Class worker, voice service, and document API |

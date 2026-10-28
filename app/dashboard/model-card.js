@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { lessons } from './preview-data.mjs';
 import { quotes, quoteAt, nextQuoteDelay } from './quotes.mjs';
-import AiClasses from './ai-classes';
+import CourseLibrary from './ai-classes';
 
 const languages = ['English', 'Hindi', 'Bengali', 'Gujarati', 'Kannada', 'Malayalam', 'Marathi', 'Odia', 'Punjabi', 'Tamil', 'Telugu', 'Assamese'];
 const profileKey = 'flowcus-student-profile';
@@ -135,7 +135,7 @@ export default function StudentWelcome({ planName }) {
       </div>
     </article>
     </header>
-    <AiClasses/>
+    <CourseLibrary/>
     {orbyOpen && <Orby studentName={profile.name} introduce={!profile.orbyIntroduced} onIntroduced={completeIntroduction} onClose={() => setOrbyOpen(false)}/>}
     <dialog ref={dialog} className="welcome-dialog" aria-labelledby="welcome-dialog-title" onCancel={() => { uploadVersion.current += 1; setLoadingPhoto(false); }} onClick={event => { if (event.target === dialog.current) closePanel(); }}>
       <button className="welcome-close" onClick={closePanel} aria-label="Close panel">×</button>
