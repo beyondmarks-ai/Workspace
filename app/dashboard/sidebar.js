@@ -22,8 +22,8 @@ function Icon({ name }) {
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>;
 }
 
-export default function DashboardSidebar({ hasCourse, profile, onPanel, onAgent, agentOpen }) {
-  const [active, setActive] = useState('courses');
+export default function DashboardSidebar({ hasCourse, profile, onPanel, onAgent, agentOpen, workspaceOrigin = '', activePage = 'courses' }) {
+  const [active, setActive] = useState(activePage);
   const [profileOpen, setProfileOpen] = useState(false);
   const [seenUpdates, setSeenUpdates] = useState(false);
   const [panel, setPanel] = useState('');
@@ -32,6 +32,8 @@ export default function DashboardSidebar({ hasCourse, profile, onPanel, onAgent,
   const profileButton = useRef(null);
   const dialog = useRef(null);
   const router = useRouter();
+
+  useEffect(() => { setActive(activePage); }, [activePage]);
 
   useEffect(() => {
     if (!profileOpen) return;
@@ -48,9 +50,10 @@ export default function DashboardSidebar({ hasCourse, profile, onPanel, onAgent,
     setActive(name);
     if (name === 'courses') {
       const heading = document.getElementById('course-library-title');
+      if (!heading) { router.push(`${workspaceOrigin}/dashboard#course-library-title`); return; }
       heading?.focus({ preventScroll: true });
       heading?.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
-    } else if (name === 'projects') router.push('/dashboard/projects');
+    } else if (name === 'projects') router.push(`${workspaceOrigin}/dashboard/projects`);
     else if (name === 'notes') onPanel('Notes');
     else if (name === 'agent') onAgent();
     else if (name === 'settings') onPanel('Settings');
@@ -70,11 +73,11 @@ export default function DashboardSidebar({ hasCourse, profile, onPanel, onAgent,
   return <>
     <aside className="workspace-rail" aria-label="Workspace sidebar">
       <span className="rail-glow" aria-hidden="true"/>
-      <Link href="/" className="rail-brand" aria-label="Beyond Marks home">b<span>.</span></Link>
+      <Link href={`${workspaceOrigin}/`} className="rail-brand" aria-label="Beyond Marks home">b<span>.</span></Link>
       <nav className="rail-main" aria-label="Workspace navigation">
         {hasCourse ? <button className="rail-item" data-label="Courses" aria-label="Courses" aria-current={active === 'courses' ? 'page' : undefined} onClick={() => select('courses')}><Icon name="courses"/></button>
-          : <Link href="/pricing" className="rail-item" data-label="Purchase a course" aria-label="Purchase a course"><Icon name="purchase"/></Link>}
-        <a href="https://dashboard.beyondmarks.ai" className="rail-item" style={{ '--item-order': 1 }} data-label="Shop" aria-label="Shop"><Icon name="shop"/></a>
+          : <Link href={`${workspaceOrigin}/pricing`} className="rail-item" data-label="Purchase a course" aria-label="Purchase a course" aria-current={active === 'purchase' ? 'page' : undefined}><Icon name="purchase"/></Link>}
+        <a href="https://dashboard.beyondmarks.ai/dashboard" className="rail-item" style={{ '--item-order': 1 }} data-label="Shop" aria-label="Shop" aria-current={active === 'shop' ? 'page' : undefined}><Icon name="shop"/></a>
         {items.map(([name, label], index) => <button key={name} className="rail-item" style={{ '--item-order': index + 2 }} data-label={label} aria-label={label} aria-current={name !== 'agent' && active === name ? 'page' : undefined} aria-pressed={name === 'agent' ? agentOpen : undefined} onClick={() => select(name)}><Icon name={name}/></button>)}
       </nav>
       <nav className="rail-footer" aria-label="Account tools">

@@ -1,4 +1,5 @@
 import "./globals.css";
+import WorkspaceNavigation from './components/workspace-navigation';
 
 export const metadata = {
   title: "Beyond Marks — WorkSpace",
@@ -8,7 +9,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body><WorkspaceNavigation/><div className="beyondmarks-page">{children}</div></body>
     </html>
   );
 }

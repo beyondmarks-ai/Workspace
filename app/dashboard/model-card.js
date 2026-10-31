@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useSearchParams } from 'next/navigation';
 import { lessons } from './preview-data.mjs';
 import { quotes, quoteAt, nextQuoteDelay } from './quotes.mjs';
 import CourseLibrary from './ai-classes';
@@ -23,6 +24,7 @@ export default function StudentWelcome({ planName, hasCourse, account }) {
   const noteKey = `flowcus-student-note:${account.id}`;
   const questionKey = `flowcus-student-question:${account.id}`;
   const activeAccount = useAccount();
+  const searchParams = useSearchParams();
   useEffect(() => {
     if (activeAccount === null) window.location.replace('/?signin=1');
     else if (activeAccount && activeAccount.id !== account.id) window.location.reload();
@@ -75,6 +77,16 @@ export default function StudentWelcome({ planName, hasCourse, account }) {
     if (next === 'Your profile' || next === 'Settings') setDraft(profile);
     dialog.current.showModal();
   }
+  useEffect(() => {
+    if (!activeAccount || activeAccount.id !== account.id) return;
+    const requested = searchParams.get('panel');
+    if (!['Notes', 'Settings', 'Your profile', 'AI Agent'].includes(requested)) return;
+    const url = new URL(window.location.href);
+    url.searchParams.delete('panel');
+    window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
+    if (requested === 'AI Agent') setOrbyOpen(true);
+    else openPanel(requested);
+  }, [searchParams, activeAccount, account.id]);
   function closePanel() {
     uploadVersion.current += 1; setLoadingPhoto(false); dialog.current.close();
   }
