@@ -50,7 +50,8 @@ export default function DashboardSidebar({ hasCourse, profile, onPanel, onAgent,
       const heading = document.getElementById('course-library-title');
       heading?.focus({ preventScroll: true });
       heading?.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
-    } else if (name === 'notes') onPanel('Notes');
+    } else if (name === 'projects') router.push('/dashboard/projects');
+    else if (name === 'notes') onPanel('Notes');
     else if (name === 'agent') onAgent();
     else if (name === 'settings') onPanel('Settings');
     else {
@@ -90,11 +91,10 @@ export default function DashboardSidebar({ hasCourse, profile, onPanel, onAgent,
     </section>}
     <dialog ref={dialog} className="rail-dialog" aria-labelledby="rail-dialog-title" onClick={event => { if (event.target === dialog.current) dialog.current.close(); }}>
       <button className="rail-dialog-close" aria-label="Close sidebar panel" onClick={() => dialog.current.close()}>×</button>
-      <span className="rail-panel-icon"><Icon name={panel || 'projects'}/></span>
+      <span className="rail-panel-icon"><Icon name={panel || 'notifications'}/></span>
       <p className="rail-eyebrow">BEYOND MARKS WORKSPACE</p>
-      <h2 id="rail-dialog-title">{panel === 'projects' ? 'Space for your next idea.' : 'You’re in the loop.'}</h2>
-      {panel === 'projects' ? <div className="rail-empty-projects"><Icon name="projects"/><strong>Your projects will live here.</strong><p>A place for everything you build. Project tools are coming soon.</p></div>
-        : <div className="rail-updates"><article><span className="rail-update-symbol"><Icon name="courses"/></span><div><h3>Your learning path is ready</h3><p>Explore 12 system design sessions and 120 class outlines. Recordings are coming soon.</p></div></article><article><span className="rail-update-symbol"><Icon name="agent"/></span><div><h3>Meet your learning companion</h3><p>Open AI Agent to bring Orby into your workspace.</p></div></article></div>}
+      <h2 id="rail-dialog-title">Your workspace updates</h2>
+      <div className="rail-updates"><article><span className="rail-update-symbol"><Icon name="courses"/></span><div><h3>Your learning path is ready</h3><p>Explore 12 system design sessions and 120 class outlines. Recordings are coming soon.</p></div></article><article><span className="rail-update-symbol"><Icon name="agent"/></span><div><h3>Meet your learning companion</h3><p>Open AI Agent to bring Orby into your workspace.</p></div></article></div>
     </dialog>
   </>;
 }
