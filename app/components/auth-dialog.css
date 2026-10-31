@@ -1,5 +1,7 @@
-html:has(.auth-dialog[open]) { overflow: hidden; }
+html:has(.auth-overlay) { overflow: hidden; }
+.auth-overlay { position:fixed; inset:0; z-index:1000; display:grid; place-items:center; background:#050c14c9; backdrop-filter:blur(10px); }
 .auth-dialog {
+  overflow:auto;
   width: min(1440px, calc(100% - 48px));
   height: min(860px, calc(100svh - 48px));
   max-width: none;
@@ -12,8 +14,7 @@ html:has(.auth-dialog[open]) { overflow: hidden; }
   font-family: 'Manrope', Arial, sans-serif;
   box-shadow: 0 32px 120px #0009;
 }
-.auth-dialog::backdrop { background: #050c14c9; backdrop-filter: blur(10px); }
-.auth-dialog[open] { animation: auth-enter .35s ease-out both; }
+.auth-dialog { animation: auth-enter .35s ease-out both; }
 .auth-scene {
   position: relative;
   min-height: 100%;
@@ -72,7 +73,7 @@ html:has(.auth-dialog[open]) { overflow: hidden; }
   .auth-card input:not([type='checkbox']) { font-size: 16px; }
   .auth-card h1 { font-size: 32px; }
 }
-@media (prefers-reduced-motion: reduce) { .auth-dialog[open], .auth-card::before { animation: none; } .auth-submit { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .auth-dialog, .auth-card::before { animation: none; } .auth-submit { transition: none; } }
 
 .auth-dialog { scrollbar-width: none; }
 .auth-dialog::-webkit-scrollbar { display: none; }

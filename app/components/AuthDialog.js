@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { accountRequest, accountChanged } from './use-account';
+import PhoneVerification from './PhoneVerification';
 
 import './auth-dialog.css';
 
@@ -20,6 +22,7 @@ function PasswordField({ name, label, signup, error }) {
 
 export default function AuthDialog({ onClose, onComplete, plan }) {
   const dialog = useRef(null);
+  const [portal, setPortal] = useState(null);
   const [signup, setSignup] = useState(false);
   const [loginMethod, setLoginMethod] = useState('email');
   const [busy, setBusy] = useState(false);
@@ -27,13 +30,23 @@ export default function AuthDialog({ onClose, onComplete, plan }) {
   const [linking, setLinking] = useState(false);
   const [message, setMessage] = useState('');
   const [passwordError, setPasswordError] = useState('');
-  const phoneUrl = `/phone-signin${plan ? `?plan=${encodeURIComponent(plan.name.toLowerCase().replaceAll(' ', '-'))}` : ''}`;
 
+  useEffect(() => { setPortal(document.body); }, []);
   useEffect(() => {
-    const element = dialog.current;
-    element.showModal();
-    return () => element.close();
-  }, []);
+    if (!portal) return;
+    const previous = document.activeElement;
+    dialog.current.querySelector('button').focus();
+    return () => { if (previous?.isConnected) previous.focus(); };
+  }, [portal]);
+
+  function handleKeyDown(event) {
+    if (event.key === 'Escape') { event.stopPropagation(); onClose(); }
+    if (event.key !== 'Tab') return;
+    const controls = [...dialog.current.querySelectorAll('button:not(:disabled), input:not(:disabled), a[href], iframe, [tabindex="0"]')].filter(element => element.getClientRects().length);
+    const first = controls[0], last = controls.at(-1);
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+  }
 
   function changeMode() {
     setSignup(!signup);
@@ -59,12 +72,15 @@ export default function AuthDialog({ onClose, onComplete, plan }) {
   }
 
   function complete() { accountChanged(); (onComplete || onClose)(); }
+  function phoneComplete(user) { accountChanged(); setSignedIn(user); setLinking(false); }
 
-  return (
-    <dialog ref={dialog} className="auth-dialog" aria-labelledby="auth-title" onClose={onClose}
-      onClick={event => { if (event.target === event.currentTarget) dialog.current.close(); }}>
+  if (!portal) return null;
+  // Google mounts its challenge under body; a native modal would make it inert.
+  return createPortal(
+    <div className="auth-overlay" onClick={event => { if (event.target === event.currentTarget) onClose(); }}>
+    <div ref={dialog} className="auth-dialog" role="dialog" aria-modal="true" aria-labelledby="auth-title" onKeyDown={handleKeyDown}>
       <div className="auth-scene">
-        <button type="button" className="auth-close" aria-label="Close login" onClick={() => dialog.current.close()}>
+        <button type="button" className="auth-close" aria-label="Close login" onClick={onClose}>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" /></svg>
         </button>
         <div className="auth-story">
@@ -86,7 +102,7 @@ export default function AuthDialog({ onClose, onComplete, plan }) {
               {!signup && !signedIn && <div className="auth-methods" role="group" aria-label="Login with">
                 {['email', 'phone'].map(method => <button type="button" key={method} aria-pressed={loginMethod === method} onClick={() => { setLoginMethod(method); setMessage(''); }}>{method === 'email' ? 'Email address' : 'Phone number'}</button>)}
               </div>}
-              {signedIn ? <div className="auth-signed-in"><p>Welcome, {signedIn.name}.</p>{linking ? <a className="auth-submit" href={`${phoneUrl}${plan ? '&' : '?'}link=1`}>Continue to phone verification</a> : <><button type="button" className="auth-submit" onClick={complete}>Continue to Workspace</button>{!signedIn.verifiedPhone && <button type="button" className="auth-alternative" onClick={() => setLinking(true)}>Link phone for OTP login</button>}</>}</div> : !signup && loginMethod === 'phone' ? <div className="phone-verification"><p>Sign in securely with a phone already linked to your account.</p><a className="auth-submit" href={phoneUrl}>Continue with phone OTP</a></div> : <form key={signup ? 'signup' : 'email'} onSubmit={submit} onInput={event => {
+              {signedIn ? <div className="auth-signed-in"><p>Welcome, {signedIn.name}.</p>{linking ? <><PhoneVerification linking onComplete={phoneComplete} /><button type="button" className="auth-alternative" onClick={() => setLinking(false)}>Back to your account</button></> : <><button type="button" className="auth-submit" onClick={complete}>Continue to Workspace</button>{!signedIn.verifiedPhone && <button type="button" className="auth-alternative" onClick={() => setLinking(true)}>Link phone for OTP login</button>}</>}</div> : !signup && loginMethod === 'phone' ? <PhoneVerification onComplete={phoneComplete} /> : <form key={signup ? 'signup' : 'email'} onSubmit={submit} onInput={event => {
                 if (signup) { event.currentTarget.elements.confirmPassword.setCustomValidity(''); setPasswordError(''); }
                 setMessage('');
               }}>
@@ -113,6 +129,7 @@ export default function AuthDialog({ onClose, onComplete, plan }) {
           </section>
         </div>
       </div>
-    </dialog>
+    </div>
+    </div>, portal
   );
 }
