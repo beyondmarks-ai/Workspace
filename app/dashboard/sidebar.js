@@ -9,7 +9,7 @@ import './sidebar.css';
 function Icon({ name }) {
   const paths = {
     courses: <><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></>,
-    purchase: <><path d="m3 9 9-5 9 5-9 5-9-5Zm4 3v5c3 3 7 3 10 0v-5M21 9v8"/></>,
+    home: <><path d="m3 10 9-7 9 7M5 9v11h5v-6h4v6h5V9"/></>,
     shop: <><path d="M4 9v11h16V9M3 9l2-6h14l2 6M3 9c0 4 5 4 5 0 0 4 8 4 8 0 0 4 5 4 5 0M9 20v-6h6v6"/></>,
     projects: <><path d="M3 7a2 2 0 0 1 2-2h5l2 3h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/><path d="M3 11h18"/></>,
     notes: <><rect x="5" y="4" width="15" height="17" rx="2"/><path d="M9 2v4M16 2v4M3 10h4M3 15h4M10 11h6M10 15h4"/></>,
@@ -76,7 +76,7 @@ export default function DashboardSidebar({ hasCourse, profile, onPanel, onAgent,
       <Link href={`${workspaceOrigin}/`} className="rail-brand" aria-label="Beyond Marks home">b<span>.</span></Link>
       <nav className="rail-main" aria-label="Workspace navigation">
         {hasCourse ? <button className="rail-item" data-label="Courses" aria-label="Courses" aria-current={active === 'courses' ? 'page' : undefined} onClick={() => select('courses')}><Icon name="courses"/></button>
-          : <Link href={`${workspaceOrigin}/pricing`} className="rail-item" data-label="Purchase a course" aria-label="Purchase a course" aria-current={active === 'purchase' ? 'page' : undefined}><Icon name="purchase"/></Link>}
+          : <Link href={`${workspaceOrigin}/dashboard`} className="rail-item" data-label="Home" aria-label="Home" aria-current={active === 'courses' ? 'page' : undefined}><Icon name="home"/></Link>}
         <a href="https://dashboard.beyondmarks.ai/dashboard" className="rail-item" style={{ '--item-order': 1 }} data-label="Shop" aria-label="Shop" aria-current={active === 'shop' ? 'page' : undefined}><Icon name="shop"/></a>
         {items.map(([name, label], index) => <button key={name} className="rail-item" style={{ '--item-order': index + 2 }} data-label={label} aria-label={label} aria-current={name !== 'agent' && active === name ? 'page' : undefined} aria-pressed={name === 'agent' ? agentOpen : undefined} onClick={() => select(name)}><Icon name={name}/></button>)}
       </nav>
