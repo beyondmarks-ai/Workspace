@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { accountRequest, accountChanged } from './use-account';
 import PhoneVerification from './PhoneVerification';
+import IndianPhoneInput from './IndianPhoneInput';
 
 import './auth-dialog.css';
 
@@ -65,7 +66,7 @@ export default function AuthDialog({ onClose, onComplete, plan }) {
     }
     setBusy(true); setMessage('');
     try {
-      const { user } = await accountRequest(signup ? { action: 'signup', name: fields.name.value, email: fields.email.value, contactNumber: fields.whatsapp.value, referral: fields.referral.value, password: fields.password.value } : { action: 'signin', contact: fields.identifier.value, password: fields.password.value });
+      const { user } = await accountRequest(signup ? { action: 'signup', name: fields.name.value, email: fields.email.value, contactNumber: `+91${fields.whatsapp.value}`, referral: fields.referral.value, password: fields.password.value } : { action: 'signin', contact: fields.identifier.value, password: fields.password.value });
       setSignedIn(user);
     } catch (error) { setMessage(error.message); }
     finally { setBusy(false); }
@@ -109,7 +110,7 @@ export default function AuthDialog({ onClose, onComplete, plan }) {
                 {signup ? <div className="auth-signup-fields">
                   <label className="auth-field auth-wide">Full name<input name="name" autoComplete="name" placeholder="Your full name" maxLength={80} required /></label>
                   <label className="auth-field auth-wide">Email address<input name="email" type="email" autoComplete="email" placeholder="you@example.com" required /></label>
-                  <label className="auth-field">WhatsApp number<input name="whatsapp" type="tel" autoComplete="tel" placeholder="+919876543210" pattern="[+]?[1-9][0-9]{7,14}" title="Enter 8-15 digits with country code, without spaces. For example: +919876543210" maxLength={16} required /></label>
+                  <label className="auth-field">WhatsApp number<IndianPhoneInput name="whatsapp" /></label>
                   <label className="auth-field">Referral code <span className="auth-optional">Optional</span><input name="referral" placeholder="Have a code?" maxLength={40} /></label>
                   <PasswordField name="password" label="Create password" signup />
                   <PasswordField name="confirmPassword" label="Confirm password" signup error={passwordError} />

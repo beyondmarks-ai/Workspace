@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { waitForPhoneChallenge } from '../../lib/phone-challenge.mjs';
+import IndianPhoneInput from './IndianPhoneInput';
 
 // Firebase tokens stay in memory; Azure's HttpOnly cookie owns the application session.
 export default function PhoneVerification({ linking = false, onComplete }) {
@@ -25,7 +26,7 @@ export default function PhoneVerification({ linking = false, onComplete }) {
 
   async function send() {
     if (Date.now() < retryAt) return;
-    if (!/^\+91[6-9][0-9]{9}$/.test(phone)) { setMessage('Enter an Indian mobile number, including +91.'); return; }
+    if (!/^\+91[6-9][0-9]{9}$/.test(phone)) { setMessage('Enter your 10-digit Indian mobile number.'); return; }
     setBusy(true); setMessage('');
     try {
       const [{ initializeApp, getApps }, authSdk] = await Promise.all([import('firebase/app'), import('firebase/auth')]);
@@ -76,7 +77,7 @@ export default function PhoneVerification({ linking = false, onComplete }) {
 
   return <form className="phone-verification auth-form" onSubmit={submit}>
     <p>{linking ? 'Verify a phone for your existing account. Your courses and credits stay with you.' : 'Use a phone you have already linked to your account. First time? Sign in with email, then link your phone.'}</p>
-    <label>Phone number<input type="tel" name="phone" autoComplete="tel" placeholder="+919876543210" pattern="\+91[6-9][0-9]{9}" value={phone} onChange={event => setPhone(event.target.value)} readOnly={sent || busy} required /></label>
+    <label>Phone number<IndianPhoneInput onChange={setPhone} readOnly={sent || busy} /></label>
     {sent && <>
       <label>Verification code<input name="otp" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" minLength={6} maxLength={6} required /></label>
       {linking && <label>Current account password<input name="currentPassword" type="password" autoComplete="current-password" minLength={8} maxLength={128} required /></label>}
