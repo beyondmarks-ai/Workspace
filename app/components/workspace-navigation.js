@@ -37,6 +37,6 @@ function AccountNavigation({ pathname, workspaceOrigin }) {
   return <div className="beyondmarks-navigation">
     <DashboardSidebar workspaceOrigin={workspaceOrigin} activePage={activePage} hasCourse={false}
       profile={{ name: account.name || 'Student', language: account.preferredLanguage || 'English', photo }}
-      onPanel={openTool} onAgent={() => openTool('AI Agent')} agentOpen={false}/>
+      onPanel={openTool}/>
   </div>;
 }

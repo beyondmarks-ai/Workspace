@@ -137,7 +137,7 @@ export default function StudentWelcome({ planName, hasCourse, account }) {
   }
 
   return <>
-    <DashboardSidebar hasCourse={hasCourse} profile={profile} onPanel={openPanel} onAgent={() => setOrbyOpen(open => !open)} agentOpen={orbyOpen}/>
+    <DashboardSidebar hasCourse={hasCourse} profile={profile} onPanel={openPanel}/>
     <header className="model-header">
     <article className="model-card" aria-labelledby="student-welcome">
       <button className="profile-picture" onClick={() => openPanel('Your profile')} aria-label="Edit your profile and photo"><Avatar photo={profile.photo}/></button>

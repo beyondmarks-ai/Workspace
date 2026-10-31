@@ -22,7 +22,7 @@ function Icon({ name }) {
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>;
 }
 
-export default function DashboardSidebar({ hasCourse, profile, onPanel, onAgent, agentOpen, workspaceOrigin = '', activePage = 'courses' }) {
+export default function DashboardSidebar({ hasCourse, profile, onPanel, workspaceOrigin = '', activePage = 'courses' }) {
   const [active, setActive] = useState(activePage);
   const [profileOpen, setProfileOpen] = useState(false);
   const [seenUpdates, setSeenUpdates] = useState(false);
@@ -47,6 +47,11 @@ export default function DashboardSidebar({ hasCourse, profile, onPanel, onAgent,
 
   function select(name) {
     setProfileOpen(false);
+    if (name === 'notes' || name === 'agent') {
+      setPanel(name);
+      dialog.current.showModal();
+      return;
+    }
     setActive(name);
     if (name === 'courses') {
       const heading = document.getElementById('course-library-title');
@@ -54,8 +59,6 @@ export default function DashboardSidebar({ hasCourse, profile, onPanel, onAgent,
       heading?.focus({ preventScroll: true });
       heading?.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
     } else if (name === 'projects') router.push(`${workspaceOrigin}/dashboard/projects`);
-    else if (name === 'notes') onPanel('Notes');
-    else if (name === 'agent') onAgent();
     else if (name === 'settings') onPanel('Settings');
     else {
       if (name === 'notifications') setSeenUpdates(true);
@@ -70,6 +73,7 @@ export default function DashboardSidebar({ hasCourse, profile, onPanel, onAgent,
   }
 
   const items = [['projects', 'Projects'], ['notes', 'Notes'], ['agent', 'AI Agent']];
+  const comingSoon = panel === 'notes' || panel === 'agent';
   return <>
     <aside className="workspace-rail" aria-label="Workspace sidebar">
       <span className="rail-glow" aria-hidden="true"/>
@@ -78,7 +82,7 @@ export default function DashboardSidebar({ hasCourse, profile, onPanel, onAgent,
         {hasCourse ? <button className="rail-item" data-label="Courses" aria-label="Courses" aria-current={active === 'courses' ? 'page' : undefined} onClick={() => select('courses')}><Icon name="courses"/></button>
           : <Link href={`${workspaceOrigin}/dashboard`} className="rail-item" data-label="Home" aria-label="Home" aria-current={active === 'courses' ? 'page' : undefined}><Icon name="home"/></Link>}
         <a href="https://dashboard.beyondmarks.ai/dashboard" className="rail-item" style={{ '--item-order': 1 }} data-label="Shop" aria-label="Shop" aria-current={active === 'shop' ? 'page' : undefined}><Icon name="shop"/></a>
-        {items.map(([name, label], index) => <button key={name} className="rail-item" style={{ '--item-order': index + 2 }} data-label={label} aria-label={label} aria-current={name !== 'agent' && active === name ? 'page' : undefined} aria-pressed={name === 'agent' ? agentOpen : undefined} onClick={() => select(name)}><Icon name={name}/></button>)}
+        {items.map(([name, label], index) => <button key={name} className="rail-item" style={{ '--item-order': index + 2 }} data-label={label} aria-label={label} aria-current={active === name ? 'page' : undefined} aria-haspopup={name !== 'projects' ? 'dialog' : undefined} onClick={() => select(name)}><Icon name={name}/></button>)}
       </nav>
       <nav className="rail-footer" aria-label="Account tools">
         <button className="rail-item" data-label="Settings" aria-label="Settings" onClick={() => select('settings')}><Icon name="settings"/></button>
@@ -92,12 +96,20 @@ export default function DashboardSidebar({ hasCourse, profile, onPanel, onAgent,
       <button className="rail-logout" onClick={logout}><Icon name="logout"/>Log out<span aria-hidden="true">↗</span></button>
       {error && <p role="alert">{error}</p>}
     </section>}
-    <dialog ref={dialog} className="rail-dialog" aria-labelledby="rail-dialog-title" onClick={event => { if (event.target === dialog.current) dialog.current.close(); }}>
+    <dialog ref={dialog} className={`rail-dialog${comingSoon ? ' rail-coming-soon' : ''}`} aria-labelledby="rail-dialog-title" aria-describedby={comingSoon ? 'rail-soon-description' : undefined} onClick={event => { if (event.target === dialog.current) dialog.current.close(); }}>
       <button className="rail-dialog-close" aria-label="Close sidebar panel" onClick={() => dialog.current.close()}>×</button>
-      <span className="rail-panel-icon"><Icon name={panel || 'notifications'}/></span>
+      {comingSoon ? <>
+        <div className="rail-soon-art" aria-hidden="true"><span/><span/><div><Icon name={panel}/></div></div>
+        <p className="rail-soon-badge"><span/>Coming soon</p>
+        <p className="rail-eyebrow">{panel === 'notes' ? 'YOUR NOTES' : 'YOUR AI AGENT'}</p>
+        <h2 id="rail-dialog-title">{panel === 'notes' ? 'Good ideas deserve a home.' : 'A little help. A lot of possibility.'}</h2>
+        <p id="rail-soon-description">{panel === 'notes' ? 'A thoughtful space to capture ideas, keep class notes and return to what matters. We’re putting the finishing touches on it.' : 'Your personal learning companion is taking shape. A smarter way to ask questions, explore ideas and keep moving forward.'}</p>
+        <button className="rail-soon-button" onClick={() => dialog.current.close()}>Got it<span aria-hidden="true">↗</span></button>
+        <p className="rail-soon-signature">Made for your next step. <span>Beyond Marks.</span></p>
+      </> : <><span className="rail-panel-icon"><Icon name={panel || 'notifications'}/></span>
       <p className="rail-eyebrow">BEYOND MARKS WORKSPACE</p>
       <h2 id="rail-dialog-title">Your workspace updates</h2>
-      <div className="rail-updates"><article><span className="rail-update-symbol"><Icon name="courses"/></span><div><h3>Your learning path is ready</h3><p>Explore 12 system design sessions and 120 class outlines. Recordings are coming soon.</p></div></article><article><span className="rail-update-symbol"><Icon name="agent"/></span><div><h3>Meet your learning companion</h3><p>Open AI Agent to bring Orby into your workspace.</p></div></article></div>
+      <div className="rail-updates"><article><span className="rail-update-symbol"><Icon name="courses"/></span><div><h3>Your learning path is ready</h3><p>Explore 12 system design sessions and 120 class outlines. Recordings are coming soon.</p></div></article><article><span className="rail-update-symbol"><Icon name="agent"/></span><div><h3>A new learning companion</h3><p>AI Agent is coming soon. A new way to ask, explore and learn.</p></div></article></div></>}
     </dialog>
   </>;
 }
