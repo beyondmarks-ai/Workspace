@@ -4,7 +4,7 @@
 
 Workspace brings the student dashboard and local class administration tools of **Beyond Marks AI Academy** into one Next.js application. Students can explore lesson previews and speak with Orby, while the local admin coordinates recording uploads, translation, and delivery to the study classroom.
 
-> **Project status:** Active development. The student experience is a design preview with a structured course curriculum and a connected local voice assistant. Payment, authentication, verified enrollment, and production course progress are not integrated yet.
+> **Project status:** Active development. The student experience is a design preview with a structured course curriculum and a connected local voice assistant. Email/password and Google phone verification are implemented against the central Azure account API. Workspace at `beyondmarks.ai` shares its account service with Shop at `dashboard.beyondmarks.ai`. Payment, verified enrollment, and production course progress remain unfinished.
 
 ## Features
 
@@ -16,8 +16,9 @@ Workspace brings the student dashboard and local class administration tools of *
 - A collection of 120 original learning quotes, rotating every five hours.
 - Browser-local profile, notes, question drafts, and Orby introduction status.
 - Shared pricing-page corner artwork, responsive layouts, and reduced-motion support.
+- Animated sidebar with Courses/Purchase, Shop, Projects, Notes and AI Agent, plus settings, notifications and a profile/logout menu. A valid plan query previews the Courses state; no plan previews Purchase. Real purchase verification is not connected. Notes, profile settings and Orby reuse the existing tools; Shop opens the live Workshop at dashboard.beyondmarks.ai in the same tab; Projects shows a design-stage panel. On phones the sidebar becomes a compact bottom dock.
 
-The System Design classes are **curriculum previews with recordings coming soon**, not playable recordings. The estimated teaching duration is 16-24 hours. Company names identify teaching examples, not partnerships or endorsements. Pricing links select a dashboard preview; they do not verify a purchase or grant course access. The earlier ten 18-second AI demo videos remain in `public/ai-demos/` but are not assigned to these classes.
+The System Design classes are **curriculum previews with recordings coming soon**, not playable recordings. The estimated teaching duration is 16-24 hours. Company names identify teaching examples, not partnerships or endorsements. Pricing selection and dashboard-preview buttons open the sign-in/signup form for new visitors. Sign-in uses the Azure account session. The dashboard checks that session on the server; browser preview markers no longer grant access. Selecting a plan does not establish a paid enrollment. The earlier ten 18-second AI demo videos remain in `public/ai-demos/` but are not assigned to these classes.
 
 ### Orby voice assistant
 
@@ -51,15 +52,16 @@ The pipeline currently assumes one teacher per recording. Local disk capacity de
 | Orby voice service | Streaming recognition, AI answers, speech synthesis | `ws://127.0.0.1:4319/voice` |
 | Companion study app | Translated recordings, timestamped classroom Q&A | `http://127.0.0.1:3000` |
 | Companion dubbing studio | Existing recording translation interface | `http://127.0.0.1:3003` |
+| Workshop (hosted) | Shop destination from the student sidebar | `https://dashboard.beyondmarks.ai` |
 | Document API | Reference uploads and DOCX validation reports | `http://localhost:8080` |
 
-The frontend uses **Next.js 14, React 18, and JavaScript**. Local services use Node.js; Orby uses WebSockets, Web Audio, **Sarvam `saaras:v4` / `bulbul:v3`**, and streaming Azure OpenAI responses. The separate document API uses Express and supports local storage or Azure Blob Storage.
+The frontend uses **Next.js 15.5.28, React 18, and JavaScript**. Local services use Node.js; Orby uses WebSockets, Web Audio, **Sarvam `saaras:v4` / `bulbul:v3`**, and streaming Azure OpenAI responses. The separate document API uses Express and supports local storage or Azure Blob Storage.
 
 ## Getting started
 
 ### Dashboard preview
 
-Use a current Node.js LTS release with `process.loadEnvFile` support (Node.js 22 or newer), npm, and Git.
+Use a current Node.js LTS release with `process.loadEnvFile` support (Node.js 24.12 or newer), npm, and Git.
 
 ```powershell
 git clone https://github.com/beyondmarks-ai/Workspace.git
@@ -96,10 +98,26 @@ From the Workspace directory:
 powershell -File .\Start-ClassWorkspace.ps1
 ```
 
+Shop opens the live Workshop at [dashboard.beyondmarks.ai](https://dashboard.beyondmarks.ai) in the same tab; no local Workshop service is required. Both apps use the same Azure account and secure domain session after this authentication release is deployed to both sites.
+
 The launcher starts missing services in hidden windows and writes logs to the ignored `tmp/` directory. Open [class administration](http://127.0.0.1:3002/admin) and keep the PC awake while processing.
 
 Source files, job manifests, and intermediate parts live in `Live Class/pipeline/`. Completed videos, subtitles, and metadata are written to `Ssc/.local-uploads/`.
 
+
+### Shared accounts and phone verification
+
+- Production domains: `https://beyondmarks.ai` (Workspace) and `https://dashboard.beyondmarks.ai` (Shop).
+- Workspace uses a same-origin `/api/auth` proxy. It forwards only the session cookie to the fixed server-configured `AUTH_API_ORIGIN`, defaulting to the Shop domain. No Azure signing secret is copied to Workspace.
+- Google project: `project-8eeef9d3-080a-4f49-95e`. Phone authentication is enabled for India only, with authorized domains and a browser key restricted to authentication APIs and the two sites/local development origins.
+- Configure `FIREBASE_PROJECT_ID` and `FIREBASE_WEB_API_KEY` on the Workshop App Service before deploying its changed code. The web key is public client configuration; Azure storage and session secrets remain server-only.
+- For local integration, run Workshop on `127.0.0.1:3004` and set Workspace `AUTH_API_ORIGIN=http://127.0.0.1:3004`. The local environment files already contain this development configuration. In production use the HTTPS Shop URL.
+- `/phone-signin` is a dedicated page so Google's verification challenge can receive focus outside a native modal dialog. SMS delivery is chargeable; the final real-phone verification must be performed by the student.
+- Shop validates Google's signature, issuer, audience, expiry, recent phone authentication and India phone format. Phone bindings and login attempt limits use conditional Azure Blob writes; binding preserves existing account IDs, credits and permissions.
+- Authentication and registration do not purchase courses or grant administrator privileges. Changing a linked phone currently requires support.
+- Run `npm run test:auth` in each repo and `npm run test:dashboard` in Workspace. Build both with `npm run build` before release. The package overrides pin patched PostCSS and gRPC dependencies; `npm audit` currently reports no known vulnerabilities.
+
+Release verification: automated authentication and dashboard tests pass. Real SMS delivery, account linking, and cross-domain sign-in still require a completed live acceptance test. Google verification must remain enabled.
 ### Voice configuration
 
 Start Orby separately with `npm run voice`. The service reads the process environment and local environment files in Workspace and the sibling Ssc project. Keep credentials server-side and out of version control.
@@ -115,7 +133,9 @@ For another environment, set the Azure endpoint and deployment explicitly. The c
 
 ### Document API
 
-The homepage also provides a reference-document workflow backed by a separate API:
+The homepage Join button opens email/password sign-in and registration against the central Azure API. Phone OTP uses Google Identity Platform and returns to Azure for signed-token verification. Students first sign in with email/password, then link their verified phone using their current password. Unverified contact numbers are never used to match accounts. The shared HttpOnly, Secure, SameSite=Lax cookie lasts seven days across beyondmarks.ai and dashboard.beyondmarks.ai. Signing out clears the shared cookie. Existing users must sign in once after the cookie migration. No passwords, OTPs or Google tokens are saved in browser storage.
+
+The separate reference-document API remains available:
 
 ```powershell
 cd backend
@@ -123,7 +143,7 @@ npm ci
 npm start
 ```
 
-Set `NEXT_PUBLIC_API_URL=http://localhost:8080` in the root `.env.local` and restart Next.js to use the local API. This variable contains the public API address, not a credential. The full-workspace launcher does not start this API.
+The API listens at `http://localhost:8080`; the homepage account flow does not call it. The full-workspace launcher does not start this API.
 
 The current processor generates a validation DOCX report. See [backend documentation](backend/README.md) for endpoints and Azure storage configuration.
 
@@ -165,7 +185,7 @@ Before merging frontend changes, run the relevant tests and `npm run build`. Sto
 
 ## Data handling and release status
 
-Profile details, uploaded profile photos, notes, drafts, and introduction status are stored in the student's browser. They are not synced to an account and must not be used as enrollment authorization.
+Account name and preferred language are saved through the Azure account API. Photos, notes, drafts, and Orby introduction status remain browser-local, keyed by the authenticated user ID. Earlier unscoped preview data is preserved but is not automatically assigned to a real account. These values never establish paid enrollment.
 
 Orby sends speech to Sarvam and question text with recent dialogue to Azure. The voice service keeps up to four exchanges in memory for the current connection and does not save audio or transcripts locally. Local request checks, message limits, timeouts, cancellation, and rate limits are implemented.
 

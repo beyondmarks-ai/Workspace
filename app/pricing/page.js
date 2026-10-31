@@ -1,4 +1,4 @@
-import Link from "next/link";
+import PlanActions from "./PlanActions";
 import PricingBackdrop from "../components/PricingBackdrop";
 
 export const metadata = {
@@ -97,8 +97,7 @@ export default function Pricing() {
                   </li>
                 ))}
               </ul>
-              <Link className="plan-cta" href={`/dashboard?plan=${plan.name.toLowerCase().replaceAll(" ", "-")}`}>Choose {plan.name}</Link>
-              <Link className="plan-preview" href={`/dashboard?plan=${plan.name.toLowerCase().replaceAll(" ", "-")}`}>Preview your dashboard ↗</Link>
+              <PlanActions plan={{ name: plan.name, price: plan.price, period: plan.period }} />
             </div>
           </article>
         ))}

@@ -1,13 +1,15 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { lessons } from './preview-data.mjs';
 import { quotes, quoteAt, nextQuoteDelay } from './quotes.mjs';
 import CourseLibrary from './ai-classes';
+import DashboardSidebar from './sidebar';
+
+import { accountRequest, useAccount } from '../components/use-account';
 
 const languages = ['English', 'Hindi', 'Bengali', 'Gujarati', 'Kannada', 'Malayalam', 'Marathi', 'Odia', 'Punjabi', 'Tamil', 'Telugu', 'Assamese'];
-const profileKey = 'flowcus-student-profile';
 const tabs = ['Lessons', 'Notes', 'Ask Doubts'];
 const defaultProfile = { name: 'Student', language: 'English', photo: '', orbyIntroduced: false };
 const Orby = dynamic(() => import('./orby'), { ssr: false });
@@ -16,7 +18,15 @@ function Avatar({ photo }) {
   return photo ? <img src={photo} alt="Your profile"/> : <svg viewBox="0 0 160 160" fill="none" aria-hidden="true"><circle cx="80" cy="80" r="68" stroke="currentColor" strokeOpacity=".2"/><circle cx="80" cy="63" r="23" fill="currentColor" fillOpacity=".8"/><path d="M37 128c2-27 18-39 43-39s41 12 43 39" fill="currentColor" fillOpacity=".8"/></svg>;
 }
 
-export default function StudentWelcome({ planName }) {
+export default function StudentWelcome({ planName, hasCourse, account }) {
+  const profileKey = `flowcus-student-profile:${account.id}`;
+  const noteKey = `flowcus-student-note:${account.id}`;
+  const questionKey = `flowcus-student-question:${account.id}`;
+  const activeAccount = useAccount();
+  useEffect(() => {
+    if (activeAccount === null) window.location.replace('/?signin=1');
+    else if (activeAccount && activeAccount.id !== account.id) window.location.reload();
+  }, [activeAccount, account.id]);
   const [profile, setProfile] = useState(defaultProfile);
   const [draft, setDraft] = useState(defaultProfile);
   const [selected, setSelected] = useState(0);
@@ -50,19 +60,19 @@ export default function StudentWelcome({ planName }) {
     };
   }, []);
 
-  // shortcut: profile and notes are browser-local previews; move to student accounts with authentication.
+  // Photos and drafts are scoped to the authenticated account on this browser.
   useEffect(() => {
     try {
       const saved = JSON.parse(localStorage.getItem(profileKey) || '{}');
-      setProfile({ name: typeof saved?.name === 'string' && saved.name.trim() ? saved.name.trim().slice(0, 40) : 'Student', language: languages.includes(saved?.language) ? saved.language : 'English', photo: typeof saved?.photo === 'string' && saved.photo.length < 2800000 && /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(saved.photo) ? saved.photo : '', orbyIntroduced: saved?.orbyIntroduced === true });
-      setNote((localStorage.getItem('flowcus-student-note') || '').slice(0, 10000));
-      setQuestion((localStorage.getItem('flowcus-student-question') || '').slice(0, 2000));
+      setProfile({ name: typeof saved?.name === 'string' && saved.name.trim() ? saved.name.trim().slice(0, 40) : account.name, language: languages.includes(saved?.language) ? saved.language : 'English', photo: typeof saved?.photo === 'string' && saved.photo.length < 2800000 && /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(saved.photo) ? saved.photo : '', orbyIntroduced: saved?.orbyIntroduced === true });
+      setNote((localStorage.getItem(noteKey) || '').slice(0, 10000));
+      setQuestion((localStorage.getItem(questionKey) || '').slice(0, 2000));
     } catch { /* Defaults keep the preview usable when browser storage is unavailable. */ }
   }, []);
 
   function openPanel(next) {
     setStatus(''); setPanel(next);
-    if (next === 'Your profile') setDraft(profile);
+    if (next === 'Your profile' || next === 'Settings') setDraft(profile);
     dialog.current.showModal();
   }
   function closePanel() {
@@ -96,10 +106,10 @@ export default function StudentWelcome({ planName }) {
     } catch { if (version === uploadVersion.current) setStatus('This image could not be opened. Choose another photo.'); }
     finally { if (version === uploadVersion.current) setLoadingPhoto(false); }
   }
-  function saveProfile(event) {
+  async function saveProfile(event) {
     event.preventDefault();
     const updated = { ...draft, name: draft.name.trim() || 'Student', orbyIntroduced: profile.orbyIntroduced };
-    try { localStorage.setItem(profileKey, JSON.stringify(updated)); setProfile(updated); closePanel(); }
+    try { await accountRequest({ name: updated.name, preferredLanguage: updated.language }, 'PATCH'); localStorage.setItem(profileKey, JSON.stringify(updated)); setProfile(updated); closePanel(); }
     catch { setStatus('Could not save your profile. Try a smaller photo or enable browser storage.'); }
   }
   function saveText(key, value) {
@@ -115,6 +125,7 @@ export default function StudentWelcome({ planName }) {
   }
 
   return <>
+    <DashboardSidebar hasCourse={hasCourse} profile={profile} onPanel={openPanel} onAgent={() => setOrbyOpen(open => !open)} agentOpen={orbyOpen}/>
     <header className="model-header">
     <article className="model-card" aria-labelledby="student-welcome">
       <button className="profile-picture" onClick={() => openPanel('Your profile')} aria-label="Edit your profile and photo"><Avatar photo={profile.photo}/></button>
@@ -140,7 +151,7 @@ export default function StudentWelcome({ planName }) {
     <dialog ref={dialog} className="welcome-dialog" aria-labelledby="welcome-dialog-title" onCancel={() => { uploadVersion.current += 1; setLoadingPhoto(false); }} onClick={event => { if (event.target === dialog.current) closePanel(); }}>
       <button className="welcome-close" onClick={closePanel} aria-label="Close panel">×</button>
       <p className="welcome-eyebrow">YOUR LEARNING SPACE</p><h2 id="welcome-dialog-title">{panel}</h2>
-      {panel === 'Your profile' ? <form onSubmit={saveProfile}>
+      {panel === 'Your profile' || panel === 'Settings' ? <form onSubmit={saveProfile}>
         <div className="profile-editor"><div className="profile-preview"><Avatar photo={draft.photo}/></div><div><label className="photo-upload">Upload your photo<input type="file" accept="image/jpeg,image/png,image/webp" onChange={choosePhoto} disabled={loadingPhoto}/></label><small>JPG, PNG or WebP · up to 2 MB</small>{draft.photo && <button type="button" className="welcome-text-button" onClick={() => setDraft(previous => ({ ...previous, photo: '' }))}>Use default profile</button>}</div></div>
         <div className="avatar-coming"><strong>Choose an avatar <span>Coming soon</span></strong><p>Your avatar collection will be available here.</p></div>
         <label className="welcome-field">Your name<input value={draft.name} onChange={event => setDraft({ ...draft, name: event.target.value })} maxLength={40} required autoComplete="given-name"/></label>
@@ -150,8 +161,9 @@ export default function StudentWelcome({ planName }) {
         <p className="welcome-hint">Sample course · recordings will appear once your course is connected.</p>
         <nav className="welcome-lessons" aria-label="Preview lessons">{lessons.map(item => <button key={item.id} aria-pressed={lesson.id === item.id} onClick={() => setLesson(item)}><span>{item.number} · {item.title}</span><small>{item.duration}</small></button>)}</nav>
         <h3>{lesson.title}</h3><p>{lesson.summary}</p><p className="welcome-hint">This is a lesson preview. No recording is playing and your progress has not changed.</p>
-      </> : panel === 'Notes' ? <><label className="welcome-field">Your study notes<textarea rows={6} maxLength={10000} value={note} onChange={event => { setNote(event.target.value); setStatus(''); }} placeholder="Write something you want to remember…"/></label><p className="welcome-hint">Saved on this browser.</p><button className="welcome-primary" onClick={() => saveText('flowcus-student-note', note)}>Save notes</button></> : panel === 'Ask Doubts' ? <><label className="welcome-field">Your question<textarea rows={5} maxLength={2000} value={question} onChange={event => { setQuestion(event.target.value); setStatus(''); }} placeholder="What would you like explained?"/></label><p className="welcome-hint">Save a draft for later. Course answers and voice responses will be available when your classroom is connected.</p><button className="welcome-primary" onClick={() => saveText('flowcus-student-question', question)}>Save draft</button></> : null}
+      </> : panel === 'Notes' ? <><label className="welcome-field">Your study notes<textarea rows={6} maxLength={10000} value={note} onChange={event => { setNote(event.target.value); setStatus(''); }} placeholder="Write something you want to remember…"/></label><p className="welcome-hint">Saved on this browser.</p><button className="welcome-primary" onClick={() => saveText(noteKey, note)}>Save notes</button></> : panel === 'Ask Doubts' ? <><label className="welcome-field">Your question<textarea rows={5} maxLength={2000} value={question} onChange={event => { setQuestion(event.target.value); setStatus(''); }} placeholder="What would you like explained?"/></label><p className="welcome-hint">Save a draft for later. Course answers and voice responses will be available when your classroom is connected.</p><button className="welcome-primary" onClick={() => saveText(questionKey, question)}>Save draft</button></> : null}
       <p className="welcome-status" role="status">{status}</p>
+      {panel === 'Settings' && <><hr /><a className="welcome-primary" href="/phone-signin?link=1">Link phone for OTP login</a></>}
     </dialog>
   </>;
 }
