@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useRouter } from 'next/navigation';
 import { accountRequest, accountChanged } from './use-account';
 import PhoneVerification from './PhoneVerification';
 import IndianPhoneInput from './IndianPhoneInput';
@@ -22,6 +23,7 @@ function PasswordField({ name, label, signup, error }) {
 }
 
 export default function AuthDialog({ onClose, onComplete, plan }) {
+  const router = useRouter();
   const dialog = useRef(null);
   const [portal, setPortal] = useState(null);
   const [signup, setSignup] = useState(false);
@@ -67,12 +69,13 @@ export default function AuthDialog({ onClose, onComplete, plan }) {
     setBusy(true); setMessage('');
     try {
       const { user } = await accountRequest(signup ? { action: 'signup', name: fields.name.value, email: fields.email.value, contactNumber: `+91${fields.whatsapp.value}`, referral: fields.referral.value, password: fields.password.value } : { action: 'signin', contact: fields.identifier.value, password: fields.password.value });
-      setSignedIn(user);
+      if (signup) complete();
+      else setSignedIn(user);
     } catch (error) { setMessage(error.message); }
     finally { setBusy(false); }
   }
 
-  function complete() { accountChanged(); (onComplete || onClose)(); }
+  function complete() { accountChanged(); if (onComplete) onComplete(); else router.push('/dashboard'); }
   function phoneComplete(user) { accountChanged(); setSignedIn(user); setLinking(false); }
 
   if (!portal) return null;
