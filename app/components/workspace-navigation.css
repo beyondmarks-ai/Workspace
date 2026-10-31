@@ -1,6 +1,5 @@
-.beyondmarks-navigation ~ .beyondmarks-page { padding-left: 104px; }
+.beyondmarks-navigation ~ .beyondmarks-page .dashboard-shell { padding-left: 128px; }
 .beyondmarks-navigation ~ .beyondmarks-page:has(.codex-modal-backdrop) { position: relative; z-index: 40; }
 @media (max-width: 700px) {
-  .beyondmarks-navigation ~ .beyondmarks-page { padding-left: 0; padding-bottom: calc(140px + env(safe-area-inset-bottom)); }
-  .beyondmarks-navigation ~ .beyondmarks-page .dashboard-shell { height: calc(100svh - 140px - env(safe-area-inset-bottom)); }
+  .beyondmarks-navigation ~ .beyondmarks-page .dashboard-shell { padding: 24px 20px calc(164px + env(safe-area-inset-bottom)); }
 }

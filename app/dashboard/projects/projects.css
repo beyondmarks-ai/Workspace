@@ -1,5 +1,4 @@
 html:has(.project-studio) { scrollbar-width: none; }
-.beyondmarks-navigation ~ .beyondmarks-page:has(.project-studio) { padding: 0; }
 @media (max-width: 700px) { .beyondmarks-navigation ~ .beyondmarks-page .project-studio { padding-bottom: calc(140px + env(safe-area-inset-bottom)); } }
 html:has(.project-studio)::-webkit-scrollbar { display: none; }
 .project-studio { --studio-ink: #302a23; position: relative; isolation: isolate; min-height: 100svh; overflow: hidden; color: var(--studio-ink); background: #aa9681; font-family: 'Manrope', Arial, sans-serif; }
