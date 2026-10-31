@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
+import { waitForPhoneChallenge } from '../../lib/phone-challenge.mjs';
 
 // Firebase tokens stay in memory; Azure's HttpOnly cookie owns the application session.
 export default function PhoneVerification({ linking = false, onComplete }) {
@@ -39,6 +40,9 @@ export default function PhoneVerification({ linking = false, onComplete }) {
       if (!mounted.current) return;
       verifier.current?.clear();
       verifier.current = new authSdk.RecaptchaVerifier(firebaseAuth.current, captcha.current, { size: window.matchMedia('(max-width: 380px)').matches ? 'compact' : 'normal' });
+      setMessage('Complete Google verification below. If it does not load, use email sign-in or try your phone browser.');
+      await waitForPhoneChallenge(verifier.current).catch(error => { verifier.current = null; throw error; });
+      if (!mounted.current) return;
       confirmation.current = await authSdk.signInWithPhoneNumber(firebaseAuth.current, phone, verifier.current);
       verifiedToken.current = null;
       if (mounted.current) { setSent(true); setRetryAt(Date.now() + 60000); setMessage('Code sent. Check your SMS messages.'); }

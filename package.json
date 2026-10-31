@@ -13,7 +13,7 @@
     "test:classes": "node --test backend/test/classes.test.js",
     "test:dashboard": "node --test backend/test/dashboard.test.js backend/test/orby-introduction.test.js backend/test/preview-session.test.js",
     "lint": "next lint",
-    "test:auth": "node --test backend/test/auth-proxy.test.mjs"
+    "test:auth": "node --test backend/test/auth-proxy.test.mjs backend/test/phone-challenge.test.mjs"
   },
   "dependencies": {
     "firebase": "^13.1.0",
