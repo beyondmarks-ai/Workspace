@@ -40,6 +40,7 @@ export default function ProjectStudio() {
 
   return <main className="project-studio" aria-label="Project studio">
     <img className="project-room" src="/projects/studio-wall.webp" alt="" fetchPriority="high"/>
+    <h1 className="studio-title">Your first project <em>starts here.</em></h1>
     <section className="studio-wall" aria-label="Course project ideas">
       <div className="studio-carousel" ref={row} role="group" aria-label="Project ideas. Drag, swipe or use arrow keys to browse." tabIndex={0} onKeyDown={keyboard} {...drag}>
         {projectIdeas.map(project => <button key={project.id} className={`project-folder${project.dark ? ' project-folder-dark' : ''}`} onClick={() => openProject(project)} aria-label={`Open Project ${number(project.number)}: ${project.title}`}>
