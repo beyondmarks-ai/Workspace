@@ -29,8 +29,6 @@ export default function AuthDialog({ onClose, onComplete, plan }) {
   const [signup, setSignup] = useState(false);
   const [loginMethod, setLoginMethod] = useState('email');
   const [busy, setBusy] = useState(false);
-  const [signedIn, setSignedIn] = useState(null);
-  const [linking, setLinking] = useState(false);
   const [message, setMessage] = useState('');
   const [passwordError, setPasswordError] = useState('');
 
@@ -68,15 +66,13 @@ export default function AuthDialog({ onClose, onComplete, plan }) {
     }
     setBusy(true); setMessage('');
     try {
-      const { user } = await accountRequest(signup ? { action: 'signup', name: fields.name.value, email: fields.email.value, contactNumber: `+91${fields.whatsapp.value}`, referral: fields.referral.value, password: fields.password.value } : { action: 'signin', contact: fields.identifier.value, password: fields.password.value });
-      if (signup) complete();
-      else setSignedIn(user);
+      await accountRequest(signup ? { action: 'signup', name: fields.name.value, email: fields.email.value, contactNumber: `+91${fields.whatsapp.value}`, referral: fields.referral.value, password: fields.password.value } : { action: 'signin', contact: fields.identifier.value, password: fields.password.value });
+      complete();
     } catch (error) { setMessage(error.message); }
     finally { setBusy(false); }
   }
 
   function complete() { accountChanged(); if (onComplete) onComplete(); else router.push('/dashboard'); }
-  function phoneComplete(user) { accountChanged(); setSignedIn(user); setLinking(false); }
 
   if (!portal) return null;
   // Google mounts its challenge under body; a native modal would make it inert.
@@ -103,10 +99,10 @@ export default function AuthDialog({ onClose, onComplete, plan }) {
                 <span>Continue with <strong>{plan.name}</strong></span>
                 <span>&#8377;{plan.price} / {plan.period}</span>
               </div>}
-              {!signup && !signedIn && <div className="auth-methods" role="group" aria-label="Login with">
+              {!signup && <div className="auth-methods" role="group" aria-label="Login with">
                 {['email', 'phone'].map(method => <button type="button" key={method} aria-pressed={loginMethod === method} onClick={() => { setLoginMethod(method); setMessage(''); }}>{method === 'email' ? 'Email address' : 'Phone number'}</button>)}
               </div>}
-              {signedIn ? <div className="auth-signed-in"><p>Welcome, {signedIn.name}.</p>{linking ? <><PhoneVerification linking onComplete={phoneComplete} /><button type="button" className="auth-alternative" onClick={() => setLinking(false)}>Back to your account</button></> : <><button type="button" className="auth-submit" onClick={complete}>Continue to Workspace</button>{!signedIn.verifiedPhone && <button type="button" className="auth-alternative" onClick={() => setLinking(true)}>Link phone for OTP login</button>}</>}</div> : !signup && loginMethod === 'phone' ? <PhoneVerification onComplete={phoneComplete} /> : <form key={signup ? 'signup' : 'email'} onSubmit={submit} onInput={event => {
+              {!signup && loginMethod === 'phone' ? <PhoneVerification onComplete={complete} /> : <form key={signup ? 'signup' : 'email'} onSubmit={submit} onInput={event => {
                 if (signup) { event.currentTarget.elements.confirmPassword.setCustomValidity(''); setPasswordError(''); }
                 setMessage('');
               }}>
@@ -127,7 +123,7 @@ export default function AuthDialog({ onClose, onComplete, plan }) {
                 <button className="auth-submit" type="submit" disabled={busy}>{busy ? 'Please wait…' : signup ? 'Create account' : 'Log in'}<span aria-hidden="true">&#8599;</span></button>
                 {message && <p className="auth-message" role="status">{message}</p>}
               </form>}
-              {!signedIn && <p className="auth-switch">{signup ? 'Already have an account?' : 'New to Workspace?'}{' '}<button type="button" onClick={changeMode}>{signup ? 'Log in' : 'Create account'}</button></p>}
+              <p className="auth-switch">{signup ? 'Already have an account?' : 'New to Workspace?'}{' '}<button type="button" onClick={changeMode}>{signup ? 'Log in' : 'Create account'}</button></p>
               <div className="auth-footer">A new way to learn. A new place to begin.</div>
             </div>
           </section>
