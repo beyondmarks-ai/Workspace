@@ -117,7 +117,7 @@ Source files, job manifests, and intermediate parts live in `Live Class/pipeline
 - Authentication and registration do not purchase courses or grant administrator privileges. Changing a linked phone currently requires support.
 - Run `npm run test:auth` in each repo and `npm run test:dashboard` in Workspace. Build both with `npm run build` before release. The package overrides pin patched PostCSS and gRPC dependencies; `npm audit` currently reports no known vulnerabilities.
 
-Release verification: automated authentication and dashboard tests pass. Real SMS delivery, account linking, and cross-domain sign-in still require a completed live acceptance test. Google verification must remain enabled.
+Release verification: both sites are deployed and automated authentication, dashboard, and live security checks pass. The user confirmed receiving an SMS and entering the code on a phone browser. Account linking and authenticated cross-domain navigation still need acceptance verification. Google invisible verification remains enabled and may require an interactive challenge for higher-risk requests. Sessions remain remembered for seven days.
 ### Voice configuration
 
 Start Orby separately with `npm run voice`. The service reads the process environment and local environment files in Workspace and the sibling Ssc project. Keep credentials server-side and out of version control.

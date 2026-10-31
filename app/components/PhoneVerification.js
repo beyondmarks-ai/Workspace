@@ -39,8 +39,8 @@ export default function PhoneVerification({ linking = false, onComplete }) {
       }
       if (!mounted.current) return;
       verifier.current?.clear();
-      verifier.current = new authSdk.RecaptchaVerifier(firebaseAuth.current, captcha.current, { size: window.matchMedia('(max-width: 380px)').matches ? 'compact' : 'normal' });
-      setMessage('Complete Google verification below. If it does not load, use email sign-in or try your phone browser.');
+      verifier.current = new authSdk.RecaptchaVerifier(firebaseAuth.current, captcha.current, { size: 'invisible' });
+      setMessage('Google is verifying this request. Complete a security challenge only if one appears.');
       await waitForPhoneChallenge(verifier.current).catch(error => { verifier.current = null; throw error; });
       if (!mounted.current) return;
       confirmation.current = await authSdk.signInWithPhoneNumber(firebaseAuth.current, phone, verifier.current);
