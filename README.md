@@ -24,6 +24,8 @@ The System Design classes are **curriculum previews with recordings coming soon*
 
 `/dashboard/notes` is protected by the existing account session and reuses the pricing background and corner artwork. Open a local PDF from the Notes sidebar page; the embedded browser reader provides its native page, zoom, and search controls where supported. Files stay on the device and are not uploaded or retained after leaving the page. A new-tab link is available for browsers with limited embedded PDF support. Invalid selections preserve the previously opened document. This does not yet provide a synced course PDF library.
 
+The adjacent PDF companion previews a scanning glow and a top-to-bottom answer reveal. It is explicitly a design preview: questions stay local, and the displayed sample is not an answer extracted from the PDF. Stop cancels the preview; changing PDFs resets the panel. Reduced-motion preferences disable the moving effects. No embeddings, vector database, retrieval service, or model calls are connected yet; replace the preview timer with authenticated document retrieval before enabling real answers and page citations.
+
 ### Orby voice assistant
 
 Orby welcomes each student by name on first introduction. The button changes from **Introduce Orby** to **Orby** only after the welcome finishes playing; completed introductions are remembered in the local profile.

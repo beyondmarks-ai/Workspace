@@ -32,7 +32,7 @@ test('reader preserves a valid PDF on errors and releases replaced and unmounted
   };
   const module = { exports: {} };
   vm.runInNewContext(await compile('../../app/dashboard/notes/notes-reader.js'), { module, exports: module.exports, Blob,
-    require: name => name === 'react' ? fakeReact : name.endsWith('PricingBackdrop') ? () => null : name === './pdf-file.mjs' ? { validatePdf } : require(name),
+    require: name => name === 'react' ? fakeReact : name.endsWith('PricingBackdrop') || name === './pdf-chat' ? () => null : name === './pdf-file.mjs' ? { validatePdf } : require(name),
     URL: { createObjectURL: file => { const url = `blob:test-${created.length}`; created.push(file.name); return url; }, revokeObjectURL: url => revoked.push(url) },
   });
   function render() { index = 0; refIndex = 0; return module.exports.default(); }
@@ -47,6 +47,36 @@ test('reader preserves a valid PDF on errors and releases replaced and unmounted
   assert.deepEqual(revoked, ['blob:test-0']);
   cleanup.forEach(fn => fn?.());
   assert.deepEqual(revoked, ['blob:test-0', 'blob:test-1']);
+});
+
+test('PDF chat preview rejects blank questions, prevents overlap, cancels and cleans up', async () => {
+  const state = [], refs = [], effects = [], timers = new Map();
+  let index = 0, refIndex = 0, timerId = 0;
+  const module = { exports: {} };
+  const fakeReact = { ...React,
+    useState(initial) { const i = index++; if (!(i in state)) state[i] = initial; return [state[i], value => { state[i] = value; }]; },
+    useRef(initial) { const i = refIndex++; return refs[i] ||= { current: initial }; },
+    useEffect: fn => effects.push(fn),
+  };
+  vm.runInNewContext(await compile('../../app/dashboard/notes/pdf-chat.js'), { module, exports: module.exports,
+    require: name => name === 'react' ? fakeReact : require(name),
+    setTimeout: fn => { timers.set(++timerId, fn); return timerId; }, clearTimeout: id => timers.delete(id),
+  });
+  const render = () => { index = 0; refIndex = 0; return module.exports.default({ document: { name: 'notes.pdf' } }); };
+  render(); const cleanup = effects.splice(0).map(fn => fn());
+  const submit = () => find(render(), n => n.type === 'form').props.onSubmit({ preventDefault() {} });
+  submit(); assert.equal(timers.size, 0);
+  find(render(), n => n.type === 'textarea').props.onChange({ target: { value: '  Explain this idea  ' } });
+  submit(); assert.equal(timers.size, 1);
+  assert.equal(find(render(), n => n.props.className === 'pdf-chat-question').props.children, 'Explain this idea');
+  assert.equal(find(render(), n => n.props.className === 'pdf-answer').props['aria-busy'], true);
+  submit(); assert.equal(timers.size, 1);
+  find(render(), n => n.type === 'button' && n.props.children === 'Stop preview').props.onClick();
+  assert.equal(timers.size, 0); assert.equal(find(render(), n => n.props.className === 'pdf-answer'), undefined);
+  submit(); const done = [...timers.values()][0]; timers.clear(); done();
+  assert.equal(find(render(), n => n.props.className === 'pdf-answer').props['data-phase'], 'done');
+  assert.match(find(render(), n => n.props.id === 'pdf-preview-disclosure').props.children, /not connected/);
+  submit(); cleanup.forEach(fn => fn?.()); assert.equal(timers.size, 0);
 });
 
 test('Notes sidebar opens the protected Notes route instead of Coming soon', async () => {

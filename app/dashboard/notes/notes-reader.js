@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import PricingBackdrop from '../../components/PricingBackdrop';
 import { validatePdf } from './pdf-file.mjs';
+import PdfChat from './pdf-chat';
 
 function DocumentIcon() {
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg>;
@@ -47,6 +48,7 @@ export default function NotesReader() {
         <div><p className="notes-eyebrow">YOUR NOTES</p><h1>A little clarity.<br/><em>On every page.</em></h1></div>
         <p>Your reading space for class notes,<br/>fresh ideas, and the details worth keeping.</p>
       </header>
+      <div className="notes-reading-layout">
       <section className="notes-reader" aria-label="PDF reader">
         <div className="notes-reader-toolbar">
           <span className="notes-file-icon"><DocumentIcon /></span>
@@ -64,6 +66,8 @@ export default function NotesReader() {
         </div>}
         <footer className="notes-reader-footer"><span>Opened on this device. Your file is not uploaded.</span>{document && <a href={document.url} target="_blank" rel="noopener noreferrer">Open in a new tab <span aria-hidden="true">↗</span></a>}</footer>
       </section>
+      <PdfChat key={document?.url || 'empty'} document={document} />
+      </div>
       <p className="notes-page-caption">A thought today. A little more understanding tomorrow.</p>
     </div>
   </main>;
