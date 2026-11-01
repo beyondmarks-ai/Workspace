@@ -33,7 +33,7 @@ function AccountNavigation({ pathname, workspaceOrigin }) {
     if (workspaceOrigin) window.location.assign(`${workspaceOrigin}${path}`);
     else router.push(path);
   }
-  const activePage = workspaceOrigin ? 'shop' : pathname.startsWith('/dashboard/projects') ? 'projects' : '';
+  const activePage = workspaceOrigin ? 'shop' : pathname.startsWith('/dashboard/projects') ? 'projects' : pathname.startsWith('/dashboard/notes') ? 'notes' : '';
   return <div className="beyondmarks-navigation">
     <DashboardSidebar workspaceOrigin={workspaceOrigin} activePage={activePage} hasCourse={false}
       profile={{ name: account.name || 'Student', language: account.preferredLanguage || 'English', photo }}

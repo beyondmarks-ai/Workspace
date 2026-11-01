@@ -47,7 +47,8 @@ export default function DashboardSidebar({ hasCourse, profile, onPanel, workspac
 
   function select(name) {
     setProfileOpen(false);
-    if (name === 'notes' || name === 'agent') {
+    if (name === 'notes') { router.push(`${workspaceOrigin}/dashboard/notes`); return; }
+    if (name === 'agent') {
       setPanel(name);
       dialog.current.showModal();
       return;
@@ -73,7 +74,7 @@ export default function DashboardSidebar({ hasCourse, profile, onPanel, workspac
   }
 
   const items = [['projects', 'Projects'], ['notes', 'Notes'], ['agent', 'AI Agent']];
-  const comingSoon = panel === 'notes' || panel === 'agent';
+  const comingSoon = panel === 'agent';
   return <>
     <aside className="workspace-rail" aria-label="Workspace sidebar">
       <span className="rail-glow" aria-hidden="true"/>
@@ -82,7 +83,7 @@ export default function DashboardSidebar({ hasCourse, profile, onPanel, workspac
         {hasCourse ? <button className="rail-item" data-label="Courses" aria-label="Courses" aria-current={active === 'courses' ? 'page' : undefined} onClick={() => select('courses')}><Icon name="courses"/></button>
           : <Link href={`${workspaceOrigin}/dashboard`} className="rail-item" data-label="Home" aria-label="Home" aria-current={active === 'courses' ? 'page' : undefined}><Icon name="home"/></Link>}
         <a href="https://dashboard.beyondmarks.ai/dashboard" className="rail-item" style={{ '--item-order': 1 }} data-label="Shop" aria-label="Shop" aria-current={active === 'shop' ? 'page' : undefined}><Icon name="shop"/></a>
-        {items.map(([name, label], index) => <button key={name} className="rail-item" style={{ '--item-order': index + 2 }} data-label={label} aria-label={label} aria-current={active === name ? 'page' : undefined} aria-haspopup={name !== 'projects' ? 'dialog' : undefined} onClick={() => select(name)}><Icon name={name}/></button>)}
+        {items.map(([name, label], index) => <button key={name} className="rail-item" style={{ '--item-order': index + 2 }} data-label={label} aria-label={label} aria-current={active === name ? 'page' : undefined} aria-haspopup={name === 'agent' ? 'dialog' : undefined} onClick={() => select(name)}><Icon name={name}/></button>)}
       </nav>
       <nav className="rail-footer" aria-label="Account tools">
         <button className="rail-item" data-label="Settings" aria-label="Settings" onClick={() => select('settings')}><Icon name="settings"/></button>
@@ -101,8 +102,8 @@ export default function DashboardSidebar({ hasCourse, profile, onPanel, workspac
       {comingSoon ? <>
         <div className="rail-soon-art" aria-hidden="true"><span/><span/><div><Icon name={panel}/></div></div>
         <p className="rail-soon-badge"><span/>Coming soon</p>
-        <p className="rail-eyebrow">{panel === 'notes' ? 'YOUR NOTES' : 'YOUR AI AGENT'}</p>
-        <h2 id="rail-dialog-title">{panel === 'notes' ? 'Good ideas deserve a home.' : 'A little help. A lot of possibility.'}</h2>
+        <p className="rail-eyebrow">YOUR AI AGENT</p>
+        <h2 id="rail-dialog-title">A little help. A lot of possibility.</h2>
         <p id="rail-soon-description">{panel === 'notes' ? 'A thoughtful space to capture ideas, keep class notes and return to what matters. We’re putting the finishing touches on it.' : 'Your personal learning companion is taking shape. A smarter way to ask questions, explore ideas and keep moving forward.'}</p>
         <button className="rail-soon-button" onClick={() => dialog.current.close()}>Got it<span aria-hidden="true">↗</span></button>
         <p className="rail-soon-signature">Made for your next step. <span>Beyond Marks.</span></p>
