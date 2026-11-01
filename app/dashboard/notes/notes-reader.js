@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import PricingBackdrop from '../../components/PricingBackdrop';
 import { validatePdf } from './pdf-file.mjs';
 import PdfChat from './pdf-chat';
+import PdfReveal from './pdf-reveal';
 
 function DocumentIcon() {
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg>;
@@ -14,6 +15,7 @@ export default function NotesReader() {
   const [error, setError] = useState('');
   const [opening, setOpening] = useState(false);
   const [scanning, setScanning] = useState(false);
+  const [sourcePage, setSourcePage] = useState(null);
   const picker = useRef(null);
   const currentUrl = useRef('');
   const selection = useRef(0);
@@ -34,7 +36,8 @@ export default function NotesReader() {
       const previousUrl = currentUrl.current;
       currentUrl.current = url;
       setScanning(false);
-      setDocument({ name: file.name, url });
+      setSourcePage(null);
+      setDocument({ name: file.name, url, file });
       if (previousUrl) URL.revokeObjectURL(previousUrl);
     } catch (cause) {
       if (request === selection.current) setError(cause.message || 'Could not open this PDF. Please try again.');
@@ -58,19 +61,19 @@ export default function NotesReader() {
           <input ref={picker} className="notes-file-input" type="file" accept="application/pdf,.pdf" aria-label="Choose a PDF" onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; openPdf(file); }} />
         </div>
         {error && <p className="notes-reader-error" role="alert">{error}</p>}
-        <div className="notes-pdf-viewport" aria-busy={scanning}>
-        {document ? <iframe className="notes-pdf-frame" key={document.url} src={`${document.url}#view=FitH&toolbar=1`} title={`Read ${document.name}`} /> : <div className="notes-reader-empty">
+        <div className="notes-pdf-viewport" aria-busy={Boolean(scanning)}>
+        {document ? <iframe className="notes-pdf-frame" key={document.url} src={`${document.url}#${sourcePage ? `page=${sourcePage}` : 'view=FitH'}&toolbar=1`} title={`Read ${document.name}`} /> : <div className="notes-reader-empty">
           <div className="notes-paper-art" aria-hidden="true"><span/><div><DocumentIcon/><i/><i/><i/></div></div>
           <p className="notes-empty-label">MAKE ROOM FOR WHAT MATTERS</p>
           <h2>Pick a page.<br/><em>Find your focus.</em></h2>
           <p>Open your class notes or any PDF<br/>and settle into reading.</p>
           <button className="notes-empty-open" type="button" disabled={opening} onClick={() => picker.current?.click()}>Choose a PDF <span aria-hidden="true">↗</span></button>
         </div>}
-        {scanning && <div className="notes-pdf-reveal" aria-hidden="true"><div className="notes-pdf-blur"/><div className="notes-pdf-scan"/><span className="notes-pdf-scan-label"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8"/><circle className="notes-pdf-orbit" cx="12" cy="12" r="8"/></svg><span>Finding clarity</span><small>Preview</small></span></div>}
+        {scanning && <PdfReveal label={scanning} />}
         </div>
-        <footer className="notes-reader-footer"><span>Opened on this device. Your file is not uploaded.</span>{document && <a href={document.url} target="_blank" rel="noopener noreferrer">Open in a new tab <span aria-hidden="true">↗</span></a>}</footer>
+        <footer className="notes-reader-footer"><span>{sourcePage ? `Source: page ${sourcePage}.` : 'PDF answers support up to 100 pages and 10 MB.'}</span>{document && <a href={`${document.url}${sourcePage ? `#page=${sourcePage}` : ''}`} target="_blank" rel="noopener noreferrer">{sourcePage ? `Open page ${sourcePage}` : 'Open in a new tab'} <span aria-hidden="true">↗</span></a>}</footer>
       </section>
-      <PdfChat key={document?.url || 'empty'} document={document} onBusyChange={setScanning} />
+      <PdfChat key={document?.url || 'empty'} document={document} onBusyChange={setScanning} onSourcePage={setSourcePage} />
       </div>
     </div>
   </main>;
