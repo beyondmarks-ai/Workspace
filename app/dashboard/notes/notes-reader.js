@@ -47,8 +47,7 @@ export default function NotesReader() {
     <PricingBackdrop />
     <div className="notes-content">
       <header className="notes-heading">
-        <div><p className="notes-eyebrow">YOUR NOTES</p><h1>A little clarity.<br/><em>On every page.</em></h1></div>
-        <p>Your reading space for class notes,<br/>fresh ideas, and the details worth keeping.</p>
+        <div><p className="notes-eyebrow">YOUR NOTES</p><h1>A little clarity. <em>On every page.</em></h1></div>
       </header>
       <div className="notes-reading-layout">
       <section className="notes-reader" aria-label="PDF reader">
@@ -73,7 +72,6 @@ export default function NotesReader() {
       </section>
       <PdfChat key={document?.url || 'empty'} document={document} onBusyChange={setScanning} />
       </div>
-      <p className="notes-page-caption">A thought today. A little more understanding tomorrow.</p>
     </div>
   </main>;
 }
