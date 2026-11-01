@@ -67,7 +67,7 @@ export default function NotesReader() {
           <p>Open your class notes or any PDF<br/>and settle into reading.</p>
           <button className="notes-empty-open" type="button" disabled={opening} onClick={() => picker.current?.click()}>Choose a PDF <span aria-hidden="true">↗</span></button>
         </div>}
-        {scanning && <div className="notes-pdf-reveal" aria-hidden="true"><div className="notes-pdf-blur"/><div className="notes-pdf-scan"/><span className="notes-pdf-scan-label">PDF reveal preview</span></div>}
+        {scanning && <div className="notes-pdf-reveal" aria-hidden="true"><div className="notes-pdf-blur"/><div className="notes-pdf-scan"/><span className="notes-pdf-scan-label"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8"/><circle className="notes-pdf-orbit" cx="12" cy="12" r="8"/></svg><span>Finding clarity</span><small>Preview</small></span></div>}
         </div>
         <footer className="notes-reader-footer"><span>Opened on this device. Your file is not uploaded.</span>{document && <a href={document.url} target="_blank" rel="noopener noreferrer">Open in a new tab <span aria-hidden="true">↗</span></a>}</footer>
       </section>

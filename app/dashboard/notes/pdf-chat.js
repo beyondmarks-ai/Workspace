@@ -20,7 +20,7 @@ export default function PdfChat({ document, onBusyChange }) {
     setPhase('searching');
     onBusyChange(true);
     // shortcut: a labelled animation preview until authenticated PDF retrieval is connected.
-    timer.current = setTimeout(() => { setPhase('done'); onBusyChange(false); }, 2400);
+    timer.current = setTimeout(() => { setPhase('done'); onBusyChange(false); }, 3200);
   }
 
   function cancel() {
