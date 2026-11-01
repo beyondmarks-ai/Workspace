@@ -59,14 +59,12 @@
 .pdf-answer { position: relative; overflow: hidden; }
 .pdf-answer-label { display: flex; align-items: center; gap: 8px; font-size: 10px; color: #746048; }
 .pdf-answer-dot { width: 6px; height: 6px; border-radius: 50%; background: #a3845e; box-shadow: 0 0 0 4px #ac8d6020; }
-.pdf-reveal-skeleton { position: relative; height: 155px; margin-top: 15px; overflow: hidden; border-radius: 10px; background: radial-gradient(ellipse at 40% 20%, #e9dcc8, #f7f1e7 75%); }
-.pdf-reveal-lines { display: grid; gap: 15px; padding: 24px 18px; filter: blur(3px); animation: pdf-lines-clarify 2.4s ease-in-out infinite; }
-.pdf-reveal-lines i { display: block; height: 6px; border-radius: 3px; background: #b5a38b80; }
-.pdf-reveal-lines i:nth-child(2) { width: 86%; }.pdf-reveal-lines i:nth-child(4) { width: 92%; }.pdf-reveal-lines i:last-child { width: 62%; }
-.pdf-reveal-scan { position: absolute; inset: -60% 0 60%; background: linear-gradient(transparent, #fffaf2bf 48%, #c4a27655 50%, transparent 58%); animation: pdf-scan 2.4s cubic-bezier(.3, 0, .2, 1) infinite; pointer-events: none; }
-.pdf-answer-reveal { position: relative; animation: pdf-answer-unveil 1.05s ease-out both; }
-.pdf-answer-reveal::after { content: ''; pointer-events: none; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 25%, #fffaf5b3 50%, transparent 75%); animation: pdf-answer-sheen 1.2s ease-out both; }
-.pdf-answer-reveal > p { font-size: 13px; line-height: 1.85; margin: 15px 0; }
+.notes-pdf-viewport { position: relative; isolation: isolate; overflow: hidden; }
+.notes-pdf-reveal { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+.notes-pdf-blur { position: absolute; inset: 0; background: #eee3d34d; backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px); animation: pdf-page-unveil 2.4s cubic-bezier(.3, 0, .2, 1) both; }
+.notes-pdf-scan { position: absolute; inset: 0; background: linear-gradient(to bottom, #b391655c, #fff8e9b3 1%, #eadbc750 6%, transparent 15%); animation: pdf-page-scan 2.4s cubic-bezier(.3, 0, .2, 1) both; }
+.notes-pdf-scan-label { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 9px 15px; border: 1px solid #fff7e54d; border-radius: 24px; background: #39332de6; color: #fffaf2; font-size: 11px; white-space: nowrap; box-shadow: 0 4px 20px #30261f20; }
+.pdf-answer-content > p { font-size: 13px; line-height: 1.85; margin: 15px 0; }
 .pdf-answer-source { padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 10px; line-height: 1.7; }
 .pdf-chat-form { padding: 12px; border: 1px solid #cdbfae; border-radius: 12px; background: #fffdf9; }
 .pdf-chat-form:focus-within { border-color: #8c6b47; box-shadow: 0 0 0 2px #8c6b4712; }
@@ -80,10 +78,8 @@
 .pdf-chat button:hover:not(:disabled) { filter: brightness(1.12); }
 .pdf-chat button:disabled { cursor: not-allowed; }
 .pdf-chat-disclosure { font-size: 10px; line-height: 1.7; color: var(--muted); margin: 12px 2px 0; }
-@keyframes pdf-lines-clarify { 0%, 100% { filter: blur(3px); opacity: .5; } 65% { filter: blur(.5px); opacity: .9; } }
-@keyframes pdf-scan { to { transform: translateY(160%); } }
-@keyframes pdf-answer-unveil { from { clip-path: inset(0 0 100%); filter: blur(5px); opacity: .4; } to { clip-path: inset(0); filter: blur(0); opacity: 1; } }
-@keyframes pdf-answer-sheen { from { transform: translateX(-110%); } to { transform: translateX(110%); } }
+@keyframes pdf-page-unveil { from { clip-path: inset(0); } to { clip-path: inset(100% 0 0); } }
+@keyframes pdf-page-scan { from { transform: translateY(0); } to { transform: translateY(100%); } }
 @media (max-width: 1150px) { .notes-reading-layout { grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; } .pdf-chat { padding: 22px 18px 16px; } }
 @media (max-width: 980px) { .notes-reading-layout { grid-template-columns: minmax(0, 1fr); } .pdf-chat { min-height: auto; } .pdf-chat-conversation { min-height: 210px; } }
-@media (prefers-reduced-motion: reduce) { .pdf-reveal-lines, .pdf-reveal-scan, .pdf-answer-reveal, .pdf-answer-reveal::after { animation: none; filter: none; } .pdf-reveal-scan, .pdf-answer-reveal::after { display: none; } }
+@media (prefers-reduced-motion: reduce) { .notes-pdf-blur, .notes-pdf-scan { display: none; animation: none; } }

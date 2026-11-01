@@ -13,6 +13,7 @@ export default function NotesReader() {
   const [document, setDocument] = useState(null);
   const [error, setError] = useState('');
   const [opening, setOpening] = useState(false);
+  const [scanning, setScanning] = useState(false);
   const picker = useRef(null);
   const currentUrl = useRef('');
   const selection = useRef(0);
@@ -32,6 +33,7 @@ export default function NotesReader() {
       const url = URL.createObjectURL(new Blob([file], { type: 'application/pdf' }));
       const previousUrl = currentUrl.current;
       currentUrl.current = url;
+      setScanning(false);
       setDocument({ name: file.name, url });
       if (previousUrl) URL.revokeObjectURL(previousUrl);
     } catch (cause) {
@@ -57,6 +59,7 @@ export default function NotesReader() {
           <input ref={picker} className="notes-file-input" type="file" accept="application/pdf,.pdf" aria-label="Choose a PDF" onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; openPdf(file); }} />
         </div>
         {error && <p className="notes-reader-error" role="alert">{error}</p>}
+        <div className="notes-pdf-viewport" aria-busy={scanning}>
         {document ? <iframe className="notes-pdf-frame" key={document.url} src={`${document.url}#view=FitH&toolbar=1`} title={`Read ${document.name}`} /> : <div className="notes-reader-empty">
           <div className="notes-paper-art" aria-hidden="true"><span/><div><DocumentIcon/><i/><i/><i/></div></div>
           <p className="notes-empty-label">MAKE ROOM FOR WHAT MATTERS</p>
@@ -64,9 +67,11 @@ export default function NotesReader() {
           <p>Open your class notes or any PDF<br/>and settle into reading.</p>
           <button className="notes-empty-open" type="button" disabled={opening} onClick={() => picker.current?.click()}>Choose a PDF <span aria-hidden="true">↗</span></button>
         </div>}
+        {scanning && <div className="notes-pdf-reveal" aria-hidden="true"><div className="notes-pdf-blur"/><div className="notes-pdf-scan"/><span className="notes-pdf-scan-label">PDF reveal preview</span></div>}
+        </div>
         <footer className="notes-reader-footer"><span>Opened on this device. Your file is not uploaded.</span>{document && <a href={document.url} target="_blank" rel="noopener noreferrer">Open in a new tab <span aria-hidden="true">↗</span></a>}</footer>
       </section>
-      <PdfChat key={document?.url || 'empty'} document={document} />
+      <PdfChat key={document?.url || 'empty'} document={document} onBusyChange={setScanning} />
       </div>
       <p className="notes-page-caption">A thought today. A little more understanding tomorrow.</p>
     </div>

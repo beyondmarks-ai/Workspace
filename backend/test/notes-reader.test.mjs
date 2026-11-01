@@ -40,10 +40,17 @@ test('reader preserves a valid PDF on errors and releases replaced and unmounted
   const choose = async file => { find(render(), n => n.type === 'input').props.onChange({ target: { files: [file], value: '' } }); await new Promise(resolve => setImmediate(resolve)); };
   await choose(new File(['%PDF-1.7'], 'first.pdf'));
   assert.equal(find(render(), n => n.type === 'iframe').props.src, 'blob:test-0#view=FitH&toolbar=1');
+  const chat = find(render(), n => typeof n.props.onBusyChange === 'function');
+  chat.props.onBusyChange(true);
+  const viewport = find(render(), n => n.props.className === 'notes-pdf-viewport');
+  assert.equal(viewport.props['aria-busy'], true);
+  assert.ok(find(viewport, n => n.props.className === 'notes-pdf-reveal'));
+  assert.equal(find(viewport, n => n.type === 'iframe').props.src, 'blob:test-0#view=FitH&toolbar=1');
   await choose(new File(['bad'], 'wrong.pdf'));
   assert.equal(find(render(), n => n.type === 'iframe').props.src, 'blob:test-0#view=FitH&toolbar=1');
   assert.ok(find(render(), n => n.props.role === 'alert'));
   await choose(new File(['%PDF-1.7'], 'second.pdf'));
+  assert.equal(find(render(), n => n.props.className === 'notes-pdf-viewport').props['aria-busy'], false);
   assert.deepEqual(revoked, ['blob:test-0']);
   cleanup.forEach(fn => fn?.());
   assert.deepEqual(revoked, ['blob:test-0', 'blob:test-1']);
@@ -51,6 +58,7 @@ test('reader preserves a valid PDF on errors and releases replaced and unmounted
 
 test('PDF chat preview rejects blank questions, prevents overlap, cancels and cleans up', async () => {
   const state = [], refs = [], effects = [], timers = new Map();
+  const busyChanges = [];
   let index = 0, refIndex = 0, timerId = 0;
   const module = { exports: {} };
   const fakeReact = { ...React,
@@ -62,19 +70,22 @@ test('PDF chat preview rejects blank questions, prevents overlap, cancels and cl
     require: name => name === 'react' ? fakeReact : require(name),
     setTimeout: fn => { timers.set(++timerId, fn); return timerId; }, clearTimeout: id => timers.delete(id),
   });
-  const render = () => { index = 0; refIndex = 0; return module.exports.default({ document: { name: 'notes.pdf' } }); };
+  const render = () => { index = 0; refIndex = 0; return module.exports.default({ document: { name: 'notes.pdf' }, onBusyChange: busy => busyChanges.push(busy) }); };
   render(); const cleanup = effects.splice(0).map(fn => fn());
   const submit = () => find(render(), n => n.type === 'form').props.onSubmit({ preventDefault() {} });
   submit(); assert.equal(timers.size, 0);
   find(render(), n => n.type === 'textarea').props.onChange({ target: { value: '  Explain this idea  ' } });
   submit(); assert.equal(timers.size, 1);
+  assert.deepEqual(busyChanges, [true]);
   assert.equal(find(render(), n => n.props.className === 'pdf-chat-question').props.children, 'Explain this idea');
   assert.equal(find(render(), n => n.props.className === 'pdf-answer').props['aria-busy'], true);
   submit(); assert.equal(timers.size, 1);
   find(render(), n => n.type === 'button' && n.props.children === 'Stop preview').props.onClick();
   assert.equal(timers.size, 0); assert.equal(find(render(), n => n.props.className === 'pdf-answer'), undefined);
+  assert.deepEqual(busyChanges, [true, false]);
   submit(); const done = [...timers.values()][0]; timers.clear(); done();
   assert.equal(find(render(), n => n.props.className === 'pdf-answer').props['data-phase'], 'done');
+  assert.deepEqual(busyChanges, [true, false, true, false]);
   assert.match(find(render(), n => n.props.id === 'pdf-preview-disclosure').props.children, /not connected/);
   submit(); cleanup.forEach(fn => fn?.()); assert.equal(timers.size, 0);
 });
